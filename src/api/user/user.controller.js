@@ -19,15 +19,16 @@ export default [
    *         $ref: '#/components/res/BadRequest'
    */
   {
-    path: '/users',
+    path: '/users/signin',
     method: 'get',
     middleware: [],
     controller: async (req, res, next) => {
+      const userInfo = req.body;
       const UserServiceInstance = Container.get(UserService);
-      const resultData = await UserServiceInstance.SignUp();
-      return res.status(200).json({
-        resultMessage: 'success',
-        resultData,
+      const resultData = await UserServiceInstance.SignIn(userInfo);
+
+      return res.status(resultData.status).json({
+        resultData
       });
     },
   },
@@ -49,11 +50,46 @@ export default [
    *         $ref: '#/components/res/BadRequest'
    */
   {
-    path: '/users',
+    path: '/users/signup',
     method: 'post',
     middleware: [],
-    controller: () => 'post user',
+    controller: async (req, res, next) => {
+      const userInfo = req.body;
+      const UserServiceInstance = Container.get(UserService);
+      const resultData = await UserServiceInstance.SignUp(userInfo);
+
+      return res.status(resultData.status).json({
+        resultData
+      });
+    },
   },
+
+  {
+    path: '/users/check',
+    method: 'get',
+    middleware: [],
+    controller: async (req, res, next) => {
+      const checkInfo = req.body;
+      const UserServiceInstance = Container.get(UserService);
+      const resultData = await UserServiceInstance.Check(checkInfo);
+
+      return res.status(resultData.status).json({
+        resultData
+      });
+    }
+  },
+
+
+
+
+
+
+
+
+
+
+
+  
 
   {
     path: '/ws',

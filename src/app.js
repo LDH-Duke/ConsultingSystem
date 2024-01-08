@@ -33,16 +33,18 @@ const errMessageColor = '\x1b[33m%s\x1b[0m';
 /* swagger setup */
 const swaggerSpec = swaggerJSDoc(swaggerConfig());
 
+
 /* Sequelize init */
-if (process.env.DB_SYNC && process.env.DB_SYNC === 'false') {
+if (process.env.DB_SYNC || process.env.DB_SYNC === 'false') {
   models.sequelize
-    .sync()
-    .then(() => {
-      console.log('Sequelize Success');
-    })
-    .catch((err) => {
-      console.log('Sequelize Error : ', err);
-    });
+  // .sync({ force: true }) : 테이블 초기화
+  .sync({ force: false })
+  .then(() => {
+    console.log('Sequelize Success');
+  })
+  .catch((err) => {
+    console.log('Sequelize Error : ', err);
+  });
 }
 
 app.disable('x-powered-by');
@@ -96,7 +98,7 @@ app.use('/docs/api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* Routes */
 routes.forEach((route) => {
-  app[route.method](route.path, [...route.middleware], route.controller);
+  app[route.method](`/api/v1${route.path}`, [...route.middleware], route.controller);
 });
 
 // catch 404 and forward to error handler

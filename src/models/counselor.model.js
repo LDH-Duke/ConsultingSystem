@@ -1,56 +1,71 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const customer = sequelize.define(
-    'customer',
+  const counselor = sequelize.define(
+    'counselor',
     /* Properties */
     {
-      customer_id: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      customer_account: {
+      name: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      customer_password: {
+      nickname: {
+        type: DataTypes.STRING,
+        notNull: false,
+        comment: ''
+      },
+      phone: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      customer_nm: {
+      email: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      customer_email: {
+      img: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      customer_address: {
+      intro: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      customer_phone: {
+      status: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      customer_mileage: {
-        type: DataTypes.STRING(255),
+      coin: {
+        type: DataTypes.INTEGER,
         notNull: false,
         comment: ''
       },
-      customer_createdAt: {
+      notice: {
+        type: DataTypes.TEXT,
+        notNull: false,
+        comment: ''
+      },
+      detail: {
+        type: DataTypes.TEXT,
+        notNull: false,
+        comment: ''
+      },
+      create_at: {
         type: DataTypes.DATE,
         defaultValue: new Date(),
         notNull: false,
         comment: ''
       },
-      customer_updatedAt: {
+      update_at: {
         type: DataTypes.DATE,
         notNull: false,
         comment: ''
@@ -58,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     /* options */
     {
-      tableName: 't_customer',
+      tableName: 'counselor',
       freezeTableName: false,
       underscored: false,
       timestamps: false
@@ -66,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  customer.associate = models => {};
+  counselor.associate = models => {};
 
-  return customer;
+  return counselor;
 };

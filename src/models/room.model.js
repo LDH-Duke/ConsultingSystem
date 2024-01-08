@@ -1,39 +1,43 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const review = sequelize.define(
-    'review',
+  const room = sequelize.define(
+    'room',
     /* Properties */
     {
-      review_id: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      review_title: {
-        type: DataTypes.STRING(255),
+      create_date: {
+        type: DataTypes.DATE,
+        defaultValue: new Date(),
+        comment: ''
+      },
+      call_time: {
+        type: DataTypes.TIME,
         notNull: false,
         comment: ''
       },
-      review_contents: {
-        type: DataTypes.STRING,
-        notNull: false,
-        comment: ''
-      },
-      review_grade: {
+      pay_coin: {
         type: DataTypes.INTEGER,
         notNull: false,
         comment: ''
       },
-      review_date: {
-        type: DataTypes.DATE,
-        defaultValue: new Date(),
+      invite_id: {
+        type: DataTypes.INTEGER,
+        notNull: false,
+        comment: ''
+      },
+      invite_access: {
+        type: DataTypes.TINYINT,
         notNull: false,
         comment: ''
       }
     },
     /* options */
     {
-      tableName: 't_review',
+      tableName: 'room',
       freezeTableName: false,
       underscored: false,
       timestamps: false
@@ -41,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  review.associate = models => {};
+  room.associate = models => {};
 
-  return review;
+  return room;
 };

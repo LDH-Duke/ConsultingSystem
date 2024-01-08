@@ -1,36 +1,47 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const notice = sequelize.define(
-    'notice',
+  const user = sequelize.define(
+    'user',
     /* Properties */
     {
-      notice_id: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      notice_title: {
+      email: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      notice_contents: {
-        type: DataTypes.STRING,
+      pw: {
+        type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
-      notice_seq: {
+      name: {
+        type: DataTypes.STRING(255),
+        notNull: false,
+        comment: ''
+      },
+      phone: {
+        type: DataTypes.STRING(255),
+        notNull: false,
+        comment: ''
+      },
+      coin: {
         type: DataTypes.INTEGER,
+        defaultValue: 10000,
         notNull: false,
         comment: ''
       },
-      notice_createdAt: {
+      create_at: {
         type: DataTypes.DATE,
         defaultValue: new Date(),
         notNull: false,
         comment: ''
       },
-      notice_updatedAt: {
+      update_at: {
         type: DataTypes.DATE,
         notNull: false,
         comment: ''
@@ -38,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     /* options */
     {
-      tableName: 't_notice',
+      tableName: 'user',
       freezeTableName: false,
       underscored: false,
       timestamps: false
@@ -46,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  notice.associate = models => {};
+  user.associate = models => {};
 
-  return notice;
+  return user;
 };
