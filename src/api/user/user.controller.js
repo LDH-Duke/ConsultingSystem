@@ -23,6 +23,7 @@ export default [
     method: 'get',
     middleware: [],
     controller: async (req, res, next) => {
+      console.log("둘옴");
       const UserServiceInstance = Container.get(UserService);
       const resultData = await UserServiceInstance.SignUp();
       return res.status(200).json({

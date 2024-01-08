@@ -34,6 +34,7 @@ fs.readdirSync(__dirname)
       file.slice(-9, -3) === '.model' &&
       file.slice(-3) === '.js'
     );
+
   })
   .forEach(file => {
     // const model = sequelize['import'](path.join(__dirname, file));
