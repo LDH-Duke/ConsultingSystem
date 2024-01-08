@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>socket namespace</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    
+  </head>
+  <body>
+    <div class="container">
+      <h3>Socket.io Chat Example <button type="button" class="btn btn-primary" onclick="namespace(1)">접속</button></h3>
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="msgForm">Message: </label>
+          <input type="text" class="form-control" id="msgForm">
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+      <div id="chatLogs"></div>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script>
+      const socket = io();
+      const rName = makeRandomName();
+      const userData = {
+          name: rName,
+          userid: `${rName}@gmail.com`
+        }
+
+
+      function makeRandomName() {
+        var name = "";
+        var possible = "abcdefghijklmnopqrstuvwxyz";
+        for (var i = 0; i < 3; i++) {
+          name += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return name;
+      }
+
+      /*  */
+      function namespace(nsp){
+        const namespace = io(`/namespace${nsp}`,userData);
+        
+        namespace.emit('login', userData)
+        namespace.on('login', data=>{
+          console.log('namespace1 login on: ',data);
+          $("#chatLogs").append(`<div><strong>${data.data}</strong> has joined</div>`);
+        })
+
+        // 서버로 자신의 정보를 전송한다.
+        // ns.emit("login", {
+        //   // name: "ungmo2",
+        //   name: rName,
+        //   userid: `${rName}@gmail.com`
+        // });
+
+        // ns.on('login', (data)=>{
+        //   console.log('socket login');
+        //   $("#chatLogs").append("<div><strong>" + data + "</strong> has joined</div>");
+        // })
+
+      }
+    </script>
+  </body>
+</html>

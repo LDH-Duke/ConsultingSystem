@@ -1,0 +1,185 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+const app = require('../src/app');
+const debug = require('debug')('sample:server');
+const http = require('http');
+const SocketIO = require('socket.io');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3333');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+const io = SocketIO(server);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+/* ===== Socket.io ===== */
+
+/* 채널 기반 소켓 */
+const room = ['room1', 'room2'];
+io.on('connection', (socket) => {
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+
+  socket.on('leaveRoom', (num, name) => {
+    socket.leave(room[num], () => {
+      console.log(name + ' leave a ' + room[num]);
+      io.to(room[num]).emit('leaveRoom', num, name);
+    });
+  });
+
+  socket.on('joinRoom', (num, name) => {
+    socket.join(room[num], () => {
+      console.log(name + ' join a ' + room[num]);
+      io.to(room[num]).emit('joinRoom', num, name);
+    });
+  });
+
+  socket.on('chat message', (num, name, msg) => {
+    a = num;
+    io.to(room[a]).emit('chat message', name, msg);
+  });
+});
+
+/* 네임스페이스 기반 소켓 */
+/* 
+const namespace1 = io.of('/namespace1');
+namespace1.on('connection', (socket) => {
+  console.log('Connection success: namespalce1');
+  console.log('socket: ', socket);
+
+  namespace1.emit('login', { data: 'namespace1 login' });
+}); 
+*/
+
+/* 기본 소켓 */
+/* 
+// connection을 수립하고, callback 인자로 socket을 받음
+io.on('connection', (socket) => {
+  // 연결이 성공했을 경우 실행됨
+  console.log('Connection success');
+
+  //
+  socket.on('login', (data) => {
+    console.log(
+      '[Client logged-in]:\n name:' + data.name + '\n userid: ' + data.userid
+    );
+    // socket에 클라이언트 정보를 저장한다
+    socket.name = data.name;
+    socket.userid = data.userid;
+
+    io.emit('login', data.name);
+  });
+
+  // 클라이언트로부터의 메시지가 수신되면
+  socket.on('chat', (data) => {
+    console.log('Message from %s: %s', socket.name, data.msg);
+
+    const msg = {
+      from: {
+        name: socket.name,
+        userid: socket.userid,
+      },
+      msg: data.msg,
+    };
+
+    // 메시지를 전송한 클라이언트를 제외한 모든 클라이언트에게 메시지를 전송한다
+    // socket.broadcast.emit('chat', msg);
+
+    // 메시지를 전송한 클라이언트에게만 메시지를 전송한다
+    // socket.emit('s2c chat', msg);
+
+    // 접속된 모든 클라이언트에게 메시지를 전송한다
+    // io.emit('s2c chat', msg);
+    io.emit('chat', msg);
+
+    // 특정 클라이언트에게만 메시지를 전송한다
+    // io.to(id).emit('s2c chat', data);
+  });
+
+  // force client disconnect from server
+  socket.on('forceDisconnect', function () {
+    socket.disconnect();
+  });
+
+  // 클라이언트의 연결이 끊어졌을 경우 실행됨
+  socket.on('disconnect', function () {
+    console.log('user disconnected: ' + socket.name);
+  });
+});
+ */
