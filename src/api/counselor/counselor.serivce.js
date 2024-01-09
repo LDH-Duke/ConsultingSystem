@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto';
 import models from '../../models';
 import { logger } from '../../utils/winstonLogger';
 const { Op } = require('sequelize')
+const crypto = require('crypto')
 
 export default class AuthService {
   /**
@@ -35,8 +36,8 @@ export default class AuthService {
         }
       })
 
+      if (counselor.length != 0) {
 
-      if (counselor) {
         // 2-2. (존재 경우) 거부 코드 리턴
         if (counselor[0].dataValues.email === body.email) {
           return {
@@ -71,7 +72,21 @@ export default class AuthService {
       }
 
       // 2-1. (없는 경우) 저장 후 승인 코드 리턴
+      // 비밀번호 암호화
+      // const hashedPw = await crypto.pbkdf2(body.pw, salt, 256, 64, 'sha512')
+      const salt = await crypto.randomBytes(64).toString('base64')
+
+      const hashedPw = crypto
+        .createHash('sha256')
+        .update(body.pw + salt)
+        .digest('base64')
+
+      body.pw = hashedPw;
+      body.salt = salt;
+      console.log(body)
+
       await models.counselor.create(body)
+
       return 200
 
     } catch (e) {
@@ -79,4 +94,21 @@ export default class AuthService {
       throw e;
     }
   }
+
+  async SignIn(body) {
+    try {
+
+      console.log(body);
+
+      //1. 아이디 조회
+      // 2. (존재 시) salt값과 body.pw를 합쳐서 hash암호화 
+      //3. 암호화 된 비밀번호와 db 비밀번호 비교
+
+
+    } catch (error) {
+
+    }
+  }
+
+
 }

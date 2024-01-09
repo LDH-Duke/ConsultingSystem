@@ -70,6 +70,33 @@ export default [
   },
 
   /**
+   * 상담사 로그인 (POST)
+   * --
+   */
+  {
+    path: '/counselor/signin',
+    method: 'post',
+    middleware: [],
+    controller: async (req, res, next) => {
+      const counselorInfo = req.body;
+      const CounselorServiceInstance = Container.get(CounselorService);
+      const resultData = await CounselorServiceInstance.SignIn(counselorInfo);
+
+
+      console.log(resultData)
+      // if ([4091, 4092, 4093].includes(resultData.status)) {
+      //   return res.status(resultData.res.status).json(resultData.res)
+      // }
+
+      return res.status(200).json({
+        msg: '로그인 완료',
+        status: resultData,
+        data: req.body.email
+      })
+    },
+  },
+
+  /**
    * 조회
    */
   {

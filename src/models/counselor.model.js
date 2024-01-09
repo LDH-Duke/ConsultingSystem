@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
+            salt: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: '',
+            },
             email: {
                 type: DataTypes.STRING(255),
                 notNull: false,
