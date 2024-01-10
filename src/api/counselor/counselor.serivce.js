@@ -101,12 +101,71 @@ export default class AuthService {
       console.log(body);
 
       //1. 아이디 조회
+      const id_Check = await models.counselor.findAll({
+        where: {
+          email: body.email
+        }
+      })
+
+      console.log(id_Check.length == 0);
+
+      //존재하지 않는 아이디
+      if (id_Check.length == 0) {
+        return false
+      }
+
       // 2. (존재 시) salt값과 body.pw를 합쳐서 hash암호화 
+      const reqHashedPw = crypto
+        .createHash('sha256')
+        .update(body.pw + id_Check[0].dataValues.salt)
+        .digest('base64')
+
       //3. 암호화 된 비밀번호와 db 비밀번호 비교
+      if (reqHashedPw !== id_Check[0].dataValues.pw) {
+        return false
+      }
+
+      // 4. 통과
+      return true
+
+    } catch (error) {
+      logger.error(`[AuthService][SignIn] Error: ${error.message}`);
+    }
+  }
+
+  /**
+   * 단일 조회(GET)
+   * --
+   */
+  async findOne(params) {
+    try {
+      const counselor = await models.counselor.findOne({
+        attributes: { exclude: ['pw', 'salt', 'updatedAt'] },
+        where: {
+          counselor_id: params
+        }
+      })
+
+      console.log(counselor.dataValues);
+
+      return counselor.dataValues
 
 
     } catch (error) {
+      logger.error(`[CounselorService][FindOne] Error: ${error.message}`);
+    }
+  }
 
+  /**
+   * 전체 조회(GET)
+   * --
+   */
+  async findAll() {
+    try {
+      return await models.counselor.findAll({ raw: true })
+
+    } catch (error) {
+      logger.error(`[CounselorService][FindAll] Error: ${error.message}`);
     }
   }
 

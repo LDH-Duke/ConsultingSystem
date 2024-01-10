@@ -73,6 +73,7 @@ export default [
    * 상담사 로그인 (POST)
    * --
    */
+  // jwt 발급
   {
     path: '/counselor/signin',
     method: 'post',
@@ -82,31 +83,58 @@ export default [
       const CounselorServiceInstance = Container.get(CounselorService);
       const resultData = await CounselorServiceInstance.SignIn(counselorInfo);
 
-
-      console.log(resultData)
-      // if ([4091, 4092, 4093].includes(resultData.status)) {
-      //   return res.status(resultData.res.status).json(resultData.res)
-      // }
-
-      return res.status(200).json({
-        msg: '로그인 완료',
-        status: resultData,
-        data: req.body.email
-      })
+      return resultData ?
+        res.status(200).json({
+          msg: '로그인 완료',
+          status: 200,
+          data: req.body.email
+        }) :
+        res.status(401).json({
+          msg: '로그인 완료',
+          status: 401,
+          data: req.body.email
+        })
     },
   },
 
   /**
-   * 조회
+   * 단일 조회(GET)
+   */
+  {
+    path: '/counselor/:counselor_id',
+    method: 'get',
+    middleware: [],
+    controller: async (req, res, next) => {
+      console.log("조회")
+      const { counselor_id } = req.params
+      console.log(counselor_id);
+      const CounselorServiceInstance = Container.get(CounselorService);
+      const resultData = await CounselorServiceInstance.findOne(counselor_id);
+
+      console.log(resultData)
+
+      return res.status(200).json({
+        resultMessage: 'success',
+        resultData,
+      });
+    },
+  },
+
+  /**
+   * 전체 조회(GET)
+   * 
    */
   {
     path: '/counselor',
     method: 'get',
     middleware: [],
     controller: async (req, res, next) => {
-      console.log("조회")
+      console.log("전체조회")
       const CounselorServiceInstance = Container.get(CounselorService);
-      const resultData = await CounselorServiceInstance.SignUp();
+      const resultData = await CounselorServiceInstance.findAll();
+
+      console.log(resultData)
+
       return res.status(200).json({
         resultMessage: 'success',
         resultData,
