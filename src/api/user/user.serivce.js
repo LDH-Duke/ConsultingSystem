@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto';
 import { Op } from 'sequelize';
 import models from '../../models';
 import { logger } from '../../utils/winstonLogger';
+import crypto from 'crypto';
 
 export default class AuthService {
   /**
@@ -16,6 +17,58 @@ export default class AuthService {
   // @Inject('logger') private logger,
   // @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
 
+
+  /**
+   * 회원가입 SignUp
+   * --
+   */
+  async SignUp(body) {
+    try {
+      const resultData = {
+        status: 400,
+        msg: '',
+        userData: null,
+      };
+
+      const hasUser = await models.user.findOne({
+        where: {
+          email: body.email,
+        }
+      });
+
+      // 1. 이미 해당 이메일이 존재할 경우 회원가입 거부
+      if (hasUser) {
+        resultData.msg = 'fail';
+        return {...resultData};
+      }
+
+      // 2. 입력한 비밀번호 암호화
+      const salt = await crypto.randomBytes(64).toString('base64');
+
+      const hashedPw = crypto
+        .createHash('sha256')
+        .update(body.pw + salt)
+        .digest('base64');
+
+      body.pw = hashedPw;
+      body.salt = salt;
+
+      console.log(body);
+
+      // 3. 회원가입 회원 데이터 DB에 저장
+      const user = await models.user.create(body);
+
+      // 4. 저장한 회원 데이터 반환
+      resultData.status = 200;
+      resultData.msg = 'success';
+      resultData.userData = user;
+
+      return {...resultData};
+    } catch (e) {
+      logger.error(`[AuthService][SignUp] Error: ${e.msg}`);
+      throw e;
+    }
+  }
 
   async SignIn(body) {
     try {
@@ -41,8 +94,17 @@ export default class AuthService {
       }
 
       // 4. 회원이 존재할 경우 비밀번호 확인
-      if (user.pw === body.pw) {
-        // 4-1. 비밀번호가 맞다면 반환 데이터 수정
+      // 4-1. 회원에 저장된 salt가져와 비밀번호 암호화 진행
+      const salt = user.salt;
+
+      const hashedPw = crypto
+          .createHash('sha256')
+          .update(body.pw + salt)
+          .digest('base64');
+
+      // 4-2. 암호화 진행한 비밀번호가 일치한지 확인
+      if (user.pw === hashedPw) {
+        // 4-3. 비밀번호가 일치하면 반환 데이터 수정
         resultData.isLogin = true;
         resultData.status = 200;
         resultData.userData = user;
@@ -53,53 +115,6 @@ export default class AuthService {
       return {...resultData};
     } catch (e) {
       logger.error(`[AuthService][SignIn] Error: ${e.message}`);
-      throw e;
-    }
-  }
-
-
-  /**
-   * 회원가입 SignUp
-   * --
-   */
-  async SignUp(body) {
-    try {
-      const resultData = {
-        status: 400,
-        msg: '',
-        userData: null,
-      };
-
-      const hasUser = await models.user.findOne({
-        where: {
-          email: body.email,
-        }
-      });
-
-      if (hasUser) {
-        resultData.msg = 'fail';
-        return {...resultData};
-      }
-
-      // 1. 전달받은 데이터 객체로 저장
-      const newUser = {
-        pw: body.pw,
-        name: body.name,
-        phone: body.phone,
-        email: body.email,
-      };
-
-      // 2. 회원가입 회원 데이터 DB에 저장
-      await models.user.create(newUser);
-
-      // 저장한 회원 데이터 반환
-      resultData.status = 200;
-      resultData.msg = 'success';
-      resultData.userData = newUser;
-
-      return {...resultData};
-    } catch (e) {
-      logger.error(`[AuthService][SignUp] Error: ${e.msg}`);
       throw e;
     }
   }
