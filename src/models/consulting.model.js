@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const room = sequelize.define(
-    'room',
+  const consulting = sequelize.define(
+    'consulting',
     /* Properties */
     {
       id: {
@@ -24,12 +24,22 @@ module.exports = (sequelize, DataTypes) => {
         notNull: false,
         comment: ''
       },
-      invite_id: {
-        type: DataTypes.INTEGER,
+      start_time: {
+        type: DataTypes.DATE,
+        notNull: false,
+        comment: '',
+      },
+      end_time: {
+        type: DataTypes.DATE,
+        notNull: false,
+        comment: '',
+      },
+      is_accept: {
+        type: DataTypes.TINYINT,
         notNull: false,
         comment: ''
       },
-      invite_access: {
+      id_user_reject: {
         type: DataTypes.TINYINT,
         notNull: false,
         comment: ''
@@ -37,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     /* options */
     {
-      tableName: 'room',
+      tableName: 'consulting',
       freezeTableName: false,
       underscored: false,
       timestamps: false
@@ -45,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  room.associate = models => {};
+  consulting.associate = models => {};
 
-  return room;
+  return consulting;
 };

@@ -79,6 +79,45 @@ export default [
     }
   },
 
+  /**
+   * 단일 조회(GET)
+   */
+  {
+    path: '/user/:user_email',
+    method: 'get',
+    middleware: [],
+    controller: async (req, res, next) => {
+      console.log("조회");
+      const { user_email } = req.params;
+      console.log(user_email);
+      const UserServiceInstance = Container.get(UserService);
+      const resultData = await UserServiceInstance.findOne(user_email);
+
+      return res.status(resultData.status).json({
+        resultData,
+      });
+    }
+  },
+
+  /**
+   * 전체 조회(GET)
+   */
+  {
+    path: '/users',
+    method: 'get',
+    middleware: [],
+    controller: async(req, res, next) => {
+      console.log('전체 조회');
+      const UserServiceInstance = Container.get(UserService);
+      const resultData = await UserServiceInstance.findAll();
+
+      console.log(resultData);
+
+      return res.status(resultData.status).json({
+        resultData,
+      });
+    }
+  },
 
 
 

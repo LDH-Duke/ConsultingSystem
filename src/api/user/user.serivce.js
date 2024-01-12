@@ -167,4 +167,62 @@ export default class AuthService {
       throw e;
     }
   }
+
+  async findOne(params) {
+    try {
+      // 1. 반환 데이터 변수
+      const resultData = {
+        status: 400,
+        userData: null,
+        msg: '',
+      };
+
+      // 2. 회원 찾기
+      const user = await models.user.findOne({
+        attribute: {exclude: ['pw', 'salt', 'update_at']},
+        where: {
+          email: params
+        }
+      });
+
+      // 3. 해당 회원이 존재한다면 반환데이터 수정
+      if (user) {
+        resultData.status = 200;
+        resultData.userData = user;
+        resultData.msg = '회원을 찾았습니다.';
+      }
+
+      // 4. 결과값 반환
+      return resultData;
+    } catch (e) {
+      logger.error(`[UserService][FindOne] Eoor: ${e.message}`);
+      throw e;
+    }
+  }
+  
+  async findAll() {
+    try {
+      // 1. 반환 데이터 변수
+      const resultData = {
+        status: 400,
+        userData: null,
+        msg: '',
+      };
+
+      // 2. 회원 정보 가져오기
+      const users = await models.user.findAll({raw: true});
+
+      // 3. 회원 정보가 있다면 결과값 수정
+      if (users) {
+        resultData.status = 200;
+        resultData.userData = users;
+        resultData.msg = '회원 정보가 존재합니다.';
+      }
+
+      return resultData;
+    } catch (e) {
+      logger.error(`[UserService][FindAll] Eoor: ${e.message}`);
+      throw e;
+    }
+  }
 }

@@ -49,6 +49,11 @@ module.exports = (sequelize, DataTypes) => {
         notNull: false,
         comment: ''
       },
+      total_coin: {
+        type: DataTypes.INTEGER,
+        notNull: false,
+        comment: ''
+      },
       notice: {
         type: DataTypes.TEXT,
         notNull: false,
@@ -56,6 +61,26 @@ module.exports = (sequelize, DataTypes) => {
       },
       detail: {
         type: DataTypes.TEXT,
+        notNull: false,
+        comment: ''
+      },
+      consulting_possible_start: {
+        type: DataTypes.DATE,
+        notNull: false,
+        comment: ''
+      },
+      consulting_possible_end: {
+        type: DataTypes.DATE,
+        notNull: false,
+        comment: ''
+      },
+      consulting_count: {
+        type: DataTypes.INTEGER,
+        notNull: false,
+        comment: ''
+      },
+      is_accept: {
+        type: DataTypes.TINYINT,
         notNull: false,
         comment: ''
       },
