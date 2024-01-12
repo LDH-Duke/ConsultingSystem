@@ -1,31 +1,31 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-    const room = sequelize.define(
-        'room',
+    const consulting = sequelize.define(
+        'consultin',
         /* Properties */
         {
-            room_id: {
+            consulting_id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
             },
-            during: {
+            total_time: {
                 type: DataTypes.INTEGER,
                 notNull: false,
                 comment: ''
             },
-            coin: {
+            pay_coin: {
                 type: DataTypes.INTEGER,
                 notNull: false,
                 comment: ''
             },
-            invite_id: {
-                type: DataTypes.INTEGER,
+            is_accept: {
+                type: DataTypes.BOOLEAN,
                 notNull: false,
                 comment: ''
             },
-            invite_access: {
-                type: DataTypes.INTEGER,
+            is_user_reject: {
+                type: DataTypes.BOOLEAN,
                 notNull: false,
                 comment: ''
             },
@@ -45,15 +45,16 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
-            updatedAt: {
+            endedAt: {
                 type: DataTypes.DATE,
                 notNull: false,
                 comment: ''
             }
+
         },
         /* options */
         {
-            tableName: 'room',
+            tableName: 'consulting',
             freezeTableName: false,
             underscored: false,
             timestamps: false
@@ -61,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    room.associate = models => { };
+    consulting.associate = models => { };
 
-    return room;
+    return consulting;
 };

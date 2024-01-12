@@ -84,7 +84,22 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 notNull: false,
                 comment: ''
-            }
+            },
+            total_coin: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            count: {
+                type: DataTypes.INTEGER,
+                notNull: false,
+                comment: ''
+            },
+            is_accept: {
+                type: DataTypes.BOOLEAN,
+                notNull: false,
+                comment: ''
+            },
         },
         /* options */
         {
