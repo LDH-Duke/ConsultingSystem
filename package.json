@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "DB_DEBUG": "DB_SYNC=true DB_LOG=true npm start",
+    "DB_DEBUG": "npm start DB_SYNC=true DB_LOG=true",
     "start": "nodemon --exec cross-env NODE_ENV=development babel-node ./bin/www",
     "deploy": "pm2 start ./deploy.json"
   },
