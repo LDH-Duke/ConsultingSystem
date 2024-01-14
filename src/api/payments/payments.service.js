@@ -15,7 +15,7 @@ export default class AuthService {
     // @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
 
     /**
-     * 결제 승인 요청 API(POST)
+     * 토스페이먼츠 결제 승인 요청 API(POST)
      * --
      */
     async ConfirmPayment(paymentInfo) {
@@ -58,10 +58,48 @@ export default class AuthService {
     }
 
     /**
-     * 결제 조회 요청(GET)
+     * 토스페이먼츠 결제 조회 요청(GET)
      */
 
     /**
-     * 결제 취소 요청(POST)
+     * 토스페이먼츠 결제 취소 요청(POST)
      */
+
+    /**
+     * 코인 결제 요청(POST)
+     * 
+     */
+    async PayCoin(payData){
+        try {
+
+            // 15 todo : 존재하는 지 체크, 
+
+            // 1. 사용자 잔여 코인 조회
+            const userCoin = await models.user.findOne({
+                attributes : ['coin'],
+                where : {
+                    user_id : payData.user_id
+                },
+                raw : true
+            })
+            // 2. 결제금액 + 잔여 코인 user DB수정
+            const amount = userCoin.coin + payData.amount
+            const updateResult = await models.user.update({
+                coin : amount,
+        
+            },{
+                where:{
+                    user_id : payData.user_id
+                }
+            })
+            console.log(updateResult);
+            // 3. payments db 저장
+            const resultData = await models.payment_history.create(payData,{raw:true})
+            console.log(resultData);
+            // 4. return
+            return resultData
+        } catch (error) {
+            
+        }
+    }
 }

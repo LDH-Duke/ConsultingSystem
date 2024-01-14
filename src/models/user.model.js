@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
+            salt: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
             name: {
                 type: DataTypes.STRING(255),
                 notNull: false,
@@ -30,7 +35,8 @@ module.exports = (sequelize, DataTypes) => {
                 comment: ''
             },
             coin: {
-                type: DataTypes.STRING(255),
+                type: DataTypes.INTEGER,
+                defaultValue:0,
                 notNull: false,
                 comment: ''
             },

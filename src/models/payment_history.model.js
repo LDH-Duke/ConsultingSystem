@@ -14,23 +14,58 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
-            pay: {
+            amount: {
                 type: DataTypes.INTEGER,
                 notNull: false,
                 comment: ''
             },
-            createdAt: {
+            status: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            method: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            product: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                notNull: false,
+                comment: ''
+            },
+            user_name: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            counselor_id: {
+                type: DataTypes.INTEGER,
+                notNull: false,
+                comment: ''
+            },
+            counselor_name: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            orderedAt: {
                 type: DataTypes.DATE,
                 defaultValue: new Date(),
                 notNull: false,
                 comment: ''
             },
-            updatedAt: {
+            paidAt: {
                 type: DataTypes.DATE,
+                defaultValue: new Date(),
                 notNull: false,
                 comment: ''
             },
-
         },
         /* options */
         {

@@ -3,14 +3,14 @@ import { Container } from 'typedi';
 
 export default [
     /**
-     * 결제 승인 요청 (POST)
+     * 토스 페이먼츠 결제 승인 요청 (POST)
      */
     {
-        path: '/payments',
+        path: '/payments/req_toss_accept',
         method: 'post',
         middleware: [],
         controller: async (req, res, next) => {
-            console.log("[payments 승인 요청 Controller]");
+            console.log("[payments 토스페이먼츠 결제 승인 요청 Controller]");
             console.log(`controller data 확인 : ` + JSON.stringify(req.body))
             const PaymentServiceInstance = Container.get(PaymentService);
             const resultData = await PaymentServiceInstance.ConfirmPayment(req.body);
@@ -20,6 +20,27 @@ export default [
             });
         },
     },
+
+    /**
+     * 코인 결제 (POST)
+     */
+    {
+        path: '/payments/pay_coin',
+        method: 'post',
+        middleware: [],
+        controller: async (req, res, next) => {
+            console.log("[payments 코인결제 요청 Controller]");
+            console.log(`controller data 확인 : ` + JSON.stringify(req.body))
+            const PaymentServiceInstance = Container.get(PaymentService);
+            const resultData = await PaymentServiceInstance.PayCoin(req.body);
+            return res.status(200).json({
+                resultMessage: 'success',
+                resultData,
+            });
+        },
+    },
+
+    
 
     {
         path: '/ws',

@@ -19,13 +19,13 @@ export default [
    *         $ref: '#/components/res/BadRequest'
    */
   {
-    path: '/users',
-    method: 'get',
+    path: '/users/signup',
+    method: 'post',
     middleware: [],
     controller: async (req, res, next) => {
-      console.log("둘옴");
+      const userInfo = req.body
       const UserServiceInstance = Container.get(UserService);
-      const resultData = await UserServiceInstance.SignUp();
+      const resultData = await UserServiceInstance.SignUp(userInfo);
       return res.status(200).json({
         resultMessage: 'success',
         resultData,
@@ -55,6 +55,28 @@ export default [
     middleware: [],
     controller: () => 'post user',
   },
+
+
+  /**
+   * 단일 조회(GET)
+   */
+  {
+    path: '/user/:user_email',
+    method: 'get',
+    middleware: [],
+    controller: async (req, res, next) => {
+      console.log("조회");
+      const { user_email } = req.params;
+      console.log(user_email);
+      const UserServiceInstance = Container.get(UserService);
+      const resultData = await UserServiceInstance.findOne(user_email);
+
+      return res.status(resultData.status).json({
+        resultData,
+      });
+    }
+  },
+
 
   {
     path: '/ws',
