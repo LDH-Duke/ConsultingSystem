@@ -30,7 +30,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  schedule.associate = models => {};
+  schedule.associate = models => {
+    schedule.belongsTo(models.counselor, {foreignKey: 'counselor_id'});
+  };
 
   return schedule;
 };

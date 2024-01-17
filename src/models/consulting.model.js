@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true
       },
-      create_date: {
+      created_date: {
         type: DataTypes.DATE,
         defaultValue: new Date(),
         comment: ''
@@ -55,7 +55,10 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  consulting.associate = models => {};
+  consulting.associate = models => {
+    consulting.belongsTo(models.user, {foreignKey: 'user_id'});
+    consulting.belongsTo(models.counselor, {foreignKey: 'counselor_id'});
+  };
 
   return consulting;
 };

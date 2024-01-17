@@ -30,7 +30,10 @@ module.exports = (sequelize, Datatypes) => {
     );
 
     /* Relations */
-    review.associate = models => {};
+    review.associate = models => {
+        review.hasMany(models.review_item, {foreignKey: 'review_id', sourceKey: 'id'});
+        review.belongsTo(models.counselor, {foreignKey: 'counselor_id'});
+    };
 
     return review;
 }

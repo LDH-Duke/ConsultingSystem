@@ -24,14 +24,14 @@ module.exports = (sequelize, DataTypes) => {
         notNull: false,
         comment: ''
       },
-      phone: {
-        type: DataTypes.STRING(255),
+      total_coin: {
+        type: DataTypes.INTEGER,
+        defaultValue: 10000,
         notNull: false,
         comment: ''
       },
-      coin: {
-        type: DataTypes.INTEGER,
-        defaultValue: 10000,
+      phone: {
+        type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
@@ -40,17 +40,17 @@ module.exports = (sequelize, DataTypes) => {
         notNull: false,
         comment: '',
       },
-      create_at: {
+      created_at: {
         type: DataTypes.DATE,
         defaultValue: new Date(),
         notNull: false,
         comment: ''
       },
-      update_at: {
+      updated_at: {
         type: DataTypes.DATE,
         notNull: false,
         comment: ''
-      }
+      },
     },
     /* options */
     {
@@ -62,7 +62,12 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  user.associate = models => {};
+  user.associate = models => {
+    user.hasMany(models.consulting, {foreignKey: 'user_id', sourceKey: 'id'});
+    user.hasMany(models.review_item, {foreignKey: 'user_id', sourceKey: 'id'});
+    user.hasMany(models.favorite, {foreignKey: 'user_id', sourceKey: 'id'});
+    user.hasMany(models.ask, {foreignKey: 'user_id', sourceKey: 'id'});
+  };
 
   return user;
 };

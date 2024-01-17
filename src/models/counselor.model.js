@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         comment: ''
       },
       nickname: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
       },
@@ -25,6 +25,16 @@ module.exports = (sequelize, DataTypes) => {
         comment: ''
       },
       email: {
+        type: DataTypes.STRING(255),
+        notNull: false,
+        comment: ''
+      },
+      pw: {
+        type: DataTypes.STRING(255),
+        notNull: false,
+        comment: ''
+      },
+      salt: {
         type: DataTypes.STRING(255),
         notNull: false,
         comment: ''
@@ -44,16 +54,6 @@ module.exports = (sequelize, DataTypes) => {
         notNull: false,
         comment: ''
       },
-      coin: {
-        type: DataTypes.INTEGER,
-        notNull: false,
-        comment: ''
-      },
-      total_coin: {
-        type: DataTypes.INTEGER,
-        notNull: false,
-        comment: ''
-      },
       notice: {
         type: DataTypes.TEXT,
         notNull: false,
@@ -61,16 +61,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       detail: {
         type: DataTypes.TEXT,
-        notNull: false,
-        comment: ''
-      },
-      consulting_possible_start: {
-        type: DataTypes.DATE,
-        notNull: false,
-        comment: ''
-      },
-      consulting_possible_end: {
-        type: DataTypes.DATE,
         notNull: false,
         comment: ''
       },
@@ -84,13 +74,13 @@ module.exports = (sequelize, DataTypes) => {
         notNull: false,
         comment: ''
       },
-      create_at: {
+      created_at: {
         type: DataTypes.DATE,
         defaultValue: new Date(),
         notNull: false,
         comment: ''
       },
-      update_at: {
+      updated_at: {
         type: DataTypes.DATE,
         notNull: false,
         comment: ''
@@ -106,7 +96,13 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   /* Relations */
-  counselor.associate = models => {};
+  counselor.associate = models => {
+    counselor.hasMany(models.consulting, {foreignKey: 'counselor_id', sourceKey: 'id'});
+    counselor.hasMany(models.review, {foreignKey: 'counselor_id', sourceKey: 'id'});
+    counselor.hasMany(models.favorite, {foreignKey: 'counselor_id', sourceKey: 'id'});
+    counselor.hasMany(models.ask, {foreignKey: 'counselor_id', sourceKey: 'id'});
+    counselor.hasMany(models.schedule, {foreignKey: 'counselor_id', sourceKey: 'id'});
+  };
 
   return counselor;
 };

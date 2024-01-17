@@ -14,12 +14,13 @@ module.exports = (sequelize, Datatypes) => {
                 notNull: false,
                 comment: ''
             },
-            create_at: {
+            created_at: {
                 type: Datatypes.DATE,
+                defaultValue: new Date(),
                 notNull: false,
                 comment: ''
             },
-            update_at: {
+            updated_at: {
                 type: Datatypes.DATE,
                 notNull: false,
                 comment: ''
@@ -35,7 +36,10 @@ module.exports = (sequelize, Datatypes) => {
     );
 
     /* Relations */
-    review_item.associate = models => {};
+    review_item.associate = models => {
+        review_item.belongsTo(models.user, {foreignKey: 'user_id'});
+        review_item.belongsTo(models.review, {foreignKey: 'review_id'});
+    };
 
     return review_item;
 }

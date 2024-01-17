@@ -24,11 +24,25 @@ export default class PaymentService {
    */
   async Confirm(info) {
     try {
-      const data = {
+      const resultData = {
         test: 'test',
+        data: {},
         status: 200,
       }
-      let {paymentKey, orderId, totalAmount} = info;
+
+      let {paymentKey, orderId, totalAmount, user_id} = info;
+
+      const userData = await models.user.findOne({
+        where: {
+          id: user_id
+        }
+      });
+
+      // userData가 없을 때 예외처리
+      if (!userData) {
+        throw new Error('회원 데이터가 존재하지 않습니다.');
+      }
+
 
       console.log(paymentKey, orderId, totalAmount);
 
@@ -59,16 +73,59 @@ export default class PaymentService {
           headers: {Authorization: 'Basic dGVzdF9za19EbnlScFFXR3JOelAxZ3h2ZUpXTHJLd3YxTTlFOg=='}
         }
       )      
-      const resultData = await result.json();
+      const pg_data = await result.json();
 
-      console.log(resultData);
-
-      // 결제 취소
+      const {type, orderName, method, status, requestedAt, approvedAt} = pg_data;
+      const payment_key = pg_data.paymentKey;
+      const order_id = pg_data.orderId;
+      const total_amount = pg_data.totalAmount;
       
-
-      return data;
+      data.data = await models.cash_history.create({
+        payment_key,
+        type,
+        order_id,
+        orderName,
+        method,
+        total_amount,
+        status,
+        requested_at: requestedAt,
+        approved_at: approvedAt,
+        pg_data,
+        user_name: userData.name,
+        user_id: userData.id,
+      })      
+      
+      return resultData;
     } catch (e) {
       logger.error(`[PaymentsService][Confirm] Error: ${e.message}`);
+      throw e;
+    }
+  }
+
+  /**
+   * 결제 내역 조회
+   */
+  async GetCashHistory(params) {
+    try {
+      const resultData = {
+        status: 400,
+        history: {},
+        message: '',
+      }
+
+      const historys = await models.cash_history.findAll({
+        where: {
+          user_id: params
+        }
+      });
+
+      resultData.status = 200;
+      resultData.history = historys;
+      resultData.message = '결제내역 조회를 성공했습니다.';
+
+      return resultData;
+    } catch (e) {
+      logger.error(`[PaymentService][GetCashHistory] Error : ${e.message}`);
       throw e;
     }
   }
@@ -78,13 +135,14 @@ export default class PaymentService {
    */
   async PayCoin(paymentInfo) {
     const transaction = await models.sequelize.transaction();
-    const resultData = {
-      status: 400,
-      message: '',
-      data: {},
-    };
-
     try {
+      const resultData = {
+        status: 400,
+        message: '',
+        data: {},
+        payStatus: 'DONE',
+      };
+
       /**
        * 1. info에는 얼마 결제할 것인지 입력된다.
        * 2. 현재 회원의 정보를 가져온다.
@@ -106,13 +164,13 @@ export default class PaymentService {
         * - (counselor_id) => null
        */
       
-      // 1. 정보 가져오기
-      const {amount, user_id} = paymentInfo;
-      const order_date = new Date();
+      // 1. 정보 가져오기 => category, amount, product, user_id, counselor_id, order_date
+      const {category, amount, product, user_id, counselor_id, order_date} = paymentInfo;
+      // const order_date = new Date();
 
       // 2. 회원 정보 가져오기
       const userData = await models.user.findOne({
-        attribute: ['name', 'coin'],
+        attribute: ['name', 'total_coin'],
         where: {
             id: user_id,
           },
@@ -122,14 +180,27 @@ export default class PaymentService {
 
       // userData가 없을 때 예외처리
       if (!userData) {
-        throw new Error('회원 데이터가 존재하지 않습니다.');
+        resultData.payStatus = 'FAILED';
+        resultData.message = '회원 데이터가 존재하지 않습니다.';
+        // throw new Error('회원 데이터가 존재하지 않습니다.');
       }
       
       // 3. 회원이 가진 코인 정보와 결제할 코인의 정보 비교 후
       //   만약 회원이 보유한 코인이 더 작을 경우 에러처리
-      if (userData.coin < amount) {
-        throw new Error('코인이 부족합니다.');
+      if (userData.total_coin < amount) {
+        resultData.payStatus = 'FAILED';
+        resultData.message = '코인이 부족합니다.';
+        // throw new Error('코인이 부족합니다.');
       }
+
+      const counselorData = await models.counselor.findOne({
+        attribute: ['name'],
+        where: {
+          id: counselor_id,
+        }
+      })
+
+
 
       // 4. 결제 내역을 남긴다. (transaction설정)
       /*
@@ -146,33 +217,35 @@ export default class PaymentService {
           * - (counselor_name) => null
           * - (counselor_id) => null
       */
-      const history = await models.payment_history.create(
+      const history = await models.coin_history.create(
         {
-          category: 'COIN',
+          category,
           amount,
           order_date,
           payment_date: new Date(),
-          status: 'DONE',
+          status: resultData.payStatus,
           method: 'COIN',
-          product: 'COIN',
+          product,
           user_name: userData.name,
-          user_id: userData.id,
+          user_id,
+          counselor_name: counselorData.name,
+          counselor_id,
         },
         { transaction }
       );
 
-      // 5. 회원이 가진 코인에서 결제할 만큼의 코인을 차감한다(transaction설정)
-      userData.coin -= amount;
+      // 5. 결제 내역을 남긴다. (transaction설정)
+      userData.total_coin -= amount;
       await models.user.update(
         {
-          coin: userData.coin
+          total_coin: userData.total_coin
         },
         {
           where: {
-            id: user_id
-          },
-          transaction
+            id: userData.id
+          }
         },
+        { transaction }
       );
 
       await userData.save({transaction});
@@ -188,10 +261,35 @@ export default class PaymentService {
     } catch (e) {
       logger.error(`[PaymentService][PayCoin] Error: ${e.message}`);
       await transaction.rollback();
-      resultData.status = 402;
-      resultData.message = e.message;
-      // throw e;
+      throw e;
+    }
+  }
+
+  /**
+   * 코인 결제 내역 조회
+   */
+  async GetCoinHistory(params) {
+    try {
+      const resultData = {
+        status: 400,
+        history: {},
+        message: '',
+      }
+
+      const historys = await models.coin_history.findAll({
+        where: {
+          user_id: id
+        }
+      });
+
+      resultData.status = 200;
+      resultData.history = historys;
+      resultData.message = '코인 결제내역 조회를 성공했습니다.';
+
       return resultData;
+    } catch (e) {
+      logger.error(`[PaymentService][GetCoinHistory] Error: ${e.message}`);
+      throw e;
     }
   }
 }

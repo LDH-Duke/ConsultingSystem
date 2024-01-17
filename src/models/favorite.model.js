@@ -14,6 +14,12 @@ module.exports = (sequelize, Datatypes) => {
                 notNull: false,
                 comment: ''
             },
+            created_at: {
+                type: Datatypes.DATE,
+                defaultValue: new Date(),
+                notNull: false,
+                comment: ''
+            },
         },
         /* options */
         {
@@ -25,7 +31,10 @@ module.exports = (sequelize, Datatypes) => {
     );
 
     /* Relations */
-    favorite.associate = models => {};
+    favorite.associate = models => {
+        favorite.belongsTo(models.user, {foreignKey: 'user_id'});
+        favorite.belongsTo(models.counselor, {foreignKey: 'counselor_id'});
+    };
 
     return favorite;
 }

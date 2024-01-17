@@ -39,11 +39,11 @@ export default class AuthService {
       // 1. 이미 해당 이메일이 존재할 경우 회원가입 거부
       if (hasUser) {
         resultData.msg = 'fail';
-        return {...resultData};
+        return resultData;
       }
 
       // 2. 입력한 비밀번호 암호화
-      const salt = await crypto.randomBytes(64).toString('base64');
+      const salt = crypto.randomBytes(64).toString('base64');
 
       const hashedPw = crypto
         .createHash('sha256')
@@ -63,7 +63,7 @@ export default class AuthService {
       resultData.msg = 'success';
       resultData.userData = user;
 
-      return {...resultData};
+      return resultData;
     } catch (e) {
       logger.error(`[AuthService][SignUp] Error: ${e.msg}`);
       throw e;
@@ -84,13 +84,14 @@ export default class AuthService {
       const user = await models.user.findOne({
         where: {
           email: body.email,
-        }
+        },
+        raw: true,
       });
-
+      console.log(user);
       // 3. 회원이 존재하지 않을 경우 로직 종료
       if (user === null) {
         resultData.msg = 'fail'
-        return {...resultData};
+        return resultData;
       }
 
       // 4. 회원이 존재할 경우 비밀번호 확인
@@ -112,7 +113,7 @@ export default class AuthService {
       }
 
       // 데이터 반환
-      return {...resultData};
+      return resultData;
     } catch (e) {
       logger.error(`[AuthService][SignIn] Error: ${e.message}`);
       throw e;
@@ -144,7 +145,7 @@ export default class AuthService {
       if (userCheck === null) {
         resultData.msg = '회원가입 가능';
         resultData.status = 200;
-        return {...resultData};
+        return resultData;
       }
 
 
@@ -153,14 +154,14 @@ export default class AuthService {
         // 이메일이 같을 경우
         resultData.msg = '입력하신 이메일은 이미 사용중인 이메일입니다.';
         resultData.status = 400;
-        return {...resultData};
+        return resultData;
       }
 
       if (userCheck.name === name) {
         // 닉네임이 같을 경우
         resultData.msg = '입력하신 닉네임은 이미 사용중인 닉네임입니다.';
         resultData.status = 400;
-        return {...resultData};
+        return resultData;
       }
     } catch (e) {
       logger.error(`[AuthService][SignIn] Error: ${e.message}`);

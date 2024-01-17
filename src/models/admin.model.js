@@ -20,7 +20,9 @@ module.exports = (sequelize, Datatypes) => {
     );
 
     /* Relations */
-    admin.associate = models => {};
+    admin.associate = models => {
+        admin.hasMany(models.ask, {foreignKey: 'admin_id', sourceKey: 'id'});
+    };
 
     return admin;
 }

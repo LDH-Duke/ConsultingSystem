@@ -25,7 +25,11 @@ module.exports = (sequelize, Datatypes) => {
     );
 
     /* Relations */
-    ask.associate = models => {};
+    ask.associate = models => {
+        ask.belongsTo(models.user, {foreignKey: 'user_id'});
+        ask.belongsTo(models.counselor, {foreignKey: 'counselor_id'});
+        ask.belongsTo(models.admin, {foreignKey: 'admin_id'});
+    };
 
     return ask;
 }

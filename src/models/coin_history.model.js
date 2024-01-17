@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, Datatypes) => {
-    const payment_history = sequelize.define(
-        'payment_history',
+    const coin_history = sequelize.define(
+        'coin_history',
         /* Properties */
         {
             id: {
@@ -10,9 +10,14 @@ module.exports = (sequelize, Datatypes) => {
                 autoIncrement: true
             },
             category: {
-                type: Datatypes.ENUM('CONSULTING', 'COIN'),
+                type: Datatypes.ENUM('CONSULTING', 'EXCHANGE'),
                 notNull: false,
                 comment: ''
+            },
+            amount: {
+                type: Datatypes.INTEGER,
+                notNull: false,
+                comment: '',
             },
             order_date: {
                 type: Datatypes.DATE,
@@ -25,12 +30,12 @@ module.exports = (sequelize, Datatypes) => {
                 comment: ''
             },
             status: {
-                type: Datatypes.ENUM('CANCEL', 'DONE', 'REFUND'),
+                type: Datatypes.ENUM('SUCCESS', 'FAILED', 'DONE', 'CANCEL'),
                 notNull: false,
                 comment: ''
             },
             method: {
-                type: Datatypes.ENUM('CARD', 'COIN'),
+                type: Datatypes.STRING(255),
                 notNull: false,
                 comment: ''
             },
@@ -62,7 +67,7 @@ module.exports = (sequelize, Datatypes) => {
         },
         /* options */
         {
-            tableName: 'payment_history',
+            tableName: 'coin_history',
             freezeTableName: false,
             underscored: false,
             timestamps: false
@@ -70,7 +75,7 @@ module.exports = (sequelize, Datatypes) => {
     );
 
     /* Relations */
-    payment_history.associate = models => {};
+    coin_history.associate = models => {};
 
-    return payment_history;
+    return coin_history;
 }
