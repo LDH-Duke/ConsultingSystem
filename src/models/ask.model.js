@@ -1,13 +1,18 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-    const favorite_counselor = sequelize.define(
-        'favorite_counselor',
+    const ask = sequelize.define(
+        'ask',
         /* Properties */
         {
-            favorite_counselor_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+            },
+            category: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
             },
             createdAt: {
                 type: DataTypes.DATE,
@@ -19,21 +24,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 notNull: false,
                 comment: ''
-            },
-            favorite_id: {
-                type: DataTypes.INTEGER,
-                notNull: false,
-                comment: ''
-            },
-            counselor_id: {
-                type: DataTypes.INTEGER,
-                notNull: false,
-                comment: ''
-            },
+            }
         },
         /* options */
         {
-            tableName: 'favorite_counselor',
+            tableName: 'ask',
             freezeTableName: false,
             underscored: false,
             timestamps: false
@@ -41,7 +36,20 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    favorite_counselor.associate = models => { };
+    ask.associate = models => {
+        ask.belongsTo(models.user, {
+            //user : consulting = 1 : N
+            foreignKey: 'user_id',
+            targetKey: 'id',
+        })
 
-    return favorite_counselor;
+        ask.belongsTo(models.counselor, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            targetKey: 'id',
+        })
+
+    };
+
+    return ask;
 };

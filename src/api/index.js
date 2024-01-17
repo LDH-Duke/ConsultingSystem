@@ -1,5 +1,5 @@
 import User from './user';
 import Counselor from './counselor'
-import Payments from './payments'
+import Coin from './coin'
 
-export const routes = [...User, ...Counselor, ...Payments];
+export const routes = [...User, ...Counselor, ...Coin];

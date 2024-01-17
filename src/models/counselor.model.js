@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
         'counselor',
         /* Properties */
         {
-            counselor_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
@@ -45,11 +45,6 @@ module.exports = (sequelize, DataTypes) => {
                 comment: ''
             },
             status: {
-                type: DataTypes.STRING(255),
-                notNull: false,
-                comment: ''
-            },
-            coin: {
                 type: DataTypes.STRING(255),
                 notNull: false,
                 comment: ''
@@ -111,7 +106,39 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    counselor.associate = models => { };
+    counselor.associate = models => {
+        counselor.hasMany(models.consulting, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            sourceKey: 'id',
+        })
+
+        counselor.hasMany(models.review, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            sourceKey: 'id',
+        })
+
+        counselor.hasMany(models.favorite, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            sourceKey: 'id',
+        })
+
+        counselor.hasMany(models.ask, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            sourceKey: 'id',
+        })
+
+        counselor.hasMany(models.schedule, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            sourceKey: 'id',
+        })
+
+
+    };
 
     return counselor;
 };

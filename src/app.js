@@ -36,7 +36,7 @@ const swaggerSpec = swaggerJSDoc(swaggerConfig());
 //process.env.DB_SYNC || process.env.DB_SYNC === 'false'
 //process.env.DB_SYNC && process.env.DB_SYNC === 'true'
 /* Sequelize init */
-// console.log(process.env.DB_SYNC || process.env.DB_SYNC === 'false');
+
 // if (process.env.DB_SYNC || process.env.DB_SYNC === 'false') {
 //   console.log("여기옴");
 //   models.sequelize

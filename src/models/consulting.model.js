@@ -1,10 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     const consulting = sequelize.define(
-        'consultin',
+        'consulting',
         /* Properties */
         {
-            consulting_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
@@ -26,11 +26,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             is_user_reject: {
                 type: DataTypes.BOOLEAN,
-                notNull: false,
-                comment: ''
-            },
-            user_id: {
-                type: DataTypes.INTEGER,
                 notNull: false,
                 comment: ''
             },
@@ -62,7 +57,17 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    consulting.associate = models => { };
+    consulting.associate = models => {
+        consulting.belongsTo(models.user, {
+            foreginKey: 'user_id',
+            targetKey: 'id'
+        })
+
+        consulting.belongsTo(models.counselor, {
+            foreginKey: 'counselor_id',
+            targetKey: 'id'
+        })
+    };
 
     return consulting;
 };

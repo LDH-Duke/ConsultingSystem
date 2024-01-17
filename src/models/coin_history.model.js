@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-    const user = sequelize.define(
-        'user',
+    const coin_history = sequelize.define(
+        'coin_history',
         /* Properties */
         {
             id: {
@@ -9,52 +9,72 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            email: {
+            category: {
                 type: DataTypes.STRING(255),
                 notNull: false,
                 comment: ''
             },
-            pw: {
-                type: DataTypes.STRING(255),
-                notNull: false,
-                comment: ''
-            },
-            salt: {
-                type: DataTypes.STRING(255),
-                notNull: false,
-                comment: ''
-            },
-            name: {
-                type: DataTypes.STRING(255),
-                notNull: false,
-                comment: ''
-            },
-            phone: {
-                type: DataTypes.STRING(255),
-                notNull: false,
-                comment: ''
-            },
-            total_coin: {
+            amount: {
                 type: DataTypes.INTEGER,
-                defaultValue: 0,
                 notNull: false,
                 comment: ''
             },
-            createdAt: {
+            status: {
+                type: DataTypes.ENUM('SUCCESS', 'FAIL', 'CANCLE'),
+                notNull: false,
+                comment: ''
+            },
+            method: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            product: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                notNull: false,
+                comment: ''
+            },
+            user_name: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            user_email: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            counselor_id: {
+                type: DataTypes.INTEGER,
+                notNull: false,
+                comment: ''
+            },
+            counselor_name: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            orderedAt: {
                 type: DataTypes.DATE,
                 defaultValue: new Date(),
                 notNull: false,
                 comment: ''
             },
-            updatedAt: {
+            paidAt: {
                 type: DataTypes.DATE,
+                defaultValue: new Date(),
                 notNull: false,
                 comment: ''
-            }
+            },
         },
         /* options */
         {
-            tableName: 'user',
+            tableName: 'coin_history',
             freezeTableName: false,
             underscored: false,
             timestamps: false
@@ -62,29 +82,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    user.associate = models => {
-        // consulting, review_item, favortie, ask
-        user.hasMany(models.consulting, {
-            //user : consulting = 1 : N
-            sourceKey: 'id',
-            foreignKey: 'user_id',
-        })
+    coin_history.associate = models => { };
 
-        user.hasMany(models.review_item, {
-            sourceKey: 'id',
-            foreignKey: 'user_id',
-        })
-
-        user.hasMany(models.favorite, {
-            sourceKey: 'id',
-            foreignKey: 'user_id',
-        })
-
-        user.hasMany(models.ask, {
-            sourceKey: 'id',
-            foreignKey: 'user_id',
-        })
-    };
-
-    return user;
+    return coin_history;
 };

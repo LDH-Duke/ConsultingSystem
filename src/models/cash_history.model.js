@@ -1,20 +1,25 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-    const payment_history = sequelize.define(
-        'payment_history',
+    const cash_history = sequelize.define(
+        'cash_history',
         /* Properties */
         {
-            payment_history_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
             },
-            category: {
+            payment_key: {
                 type: DataTypes.STRING(255),
                 notNull: false,
                 comment: ''
             },
-            amount: {
+            type: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            total_amount: {
                 type: DataTypes.INTEGER,
                 notNull: false,
                 comment: ''
@@ -29,38 +34,33 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
-            product: {
+            order_id: {
                 type: DataTypes.STRING(255),
                 notNull: false,
                 comment: ''
             },
-            user_id: {
-                type: DataTypes.INTEGER,
-                notNull: false,
-                comment: ''
-            },
-            user_name: {
+            order_name: {
                 type: DataTypes.STRING(255),
                 notNull: false,
                 comment: ''
             },
-            counselor_id: {
-                type: DataTypes.INTEGER,
+            pg_data: {
+                type: DataTypes.JSON,
                 notNull: false,
                 comment: ''
             },
-            counselor_name: {
-                type: DataTypes.STRING(255),
-                notNull: false,
-                comment: ''
-            },
-            orderedAt: {
+            // user_name: {
+            //     type: DataTypes.STRING(255),
+            //     notNull: false,
+            //     comment: ''
+            // },
+            requestedAt: {
                 type: DataTypes.DATE,
                 defaultValue: new Date(),
                 notNull: false,
                 comment: ''
             },
-            paidAt: {
+            approvedAt: {
                 type: DataTypes.DATE,
                 defaultValue: new Date(),
                 notNull: false,
@@ -69,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         /* options */
         {
-            tableName: 'payment_history',
+            tableName: 'cash_history',
             freezeTableName: false,
             underscored: false,
             timestamps: false
@@ -77,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    payment_history.associate = models => { };
+    cash_history.associate = models => { };
 
-    return payment_history;
+    return cash_history;
 };

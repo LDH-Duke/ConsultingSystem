@@ -1,4 +1,4 @@
-import PaymentService from './payments.service'
+import CoinService from './cash.service'
 import { Container } from 'typedi';
 
 export default [
@@ -22,17 +22,17 @@ export default [
     },
 
     /**
-     * 코인 결제 (POST)
+     * 코인 충전 (POST)
      */
     {
-        path: '/payments/pay_coin',
+        path: '/coin/charge',
         method: 'post',
         middleware: [],
         controller: async (req, res, next) => {
-            console.log("[payments 코인결제 요청 Controller]");
+            console.log("[Coin 코인결제 요청 Controller]");
             console.log(`controller data 확인 : ` + JSON.stringify(req.body))
-            const PaymentServiceInstance = Container.get(PaymentService);
-            const resultData = await PaymentServiceInstance.PayCoin(req.body);
+            const CoinServiceInstance = Container.get(CoinService);
+            const resultData = await CoinServiceInstance.Charge(req.body);
             return res.status(200).json({
                 resultMessage: 'success',
                 resultData,
@@ -40,24 +40,4 @@ export default [
         },
     },
 
-    
-
-    {
-        path: '/ws',
-        method: 'get',
-        middleware: [],
-        controller: async (req, res, next) => res.render('index', { title: 'aaa' }),
-    },
-    {
-        path: '/ws/namespace',
-        method: 'get',
-        middleware: [],
-        controller: async (_, res, ___) => res.render('socket_namespace'),
-    },
-    {
-        path: '/ws/room',
-        method: 'get',
-        middleware: [],
-        controller: async (_, res, ___) => res.render('socket_room'),
-    },
 ];

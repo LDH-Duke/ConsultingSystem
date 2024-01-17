@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
         'schedule',
         /* Properties */
         {
-            schedule_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
@@ -46,7 +46,13 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    schedule.associate = models => { };
+    schedule.associate = models => {
+        schedule.belongsTo(models.counselor, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            targetKey: 'id',
+        })
+    };
 
     return schedule;
 };

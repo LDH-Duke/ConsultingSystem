@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
         'favorite',
         /* Properties */
         {
-            favorite_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
@@ -25,11 +25,6 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
-            user_id: {
-                type: DataTypes.INTEGER,
-                notNull: false,
-                comment: ''
-            },
         },
         /* options */
         {
@@ -41,7 +36,20 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    favorite.associate = models => { };
+    favorite.associate = models => {
+
+        favorite.belongsTo(models.counselor, {
+            //user : consulting = 1 : N
+            foreignKey: 'counselor_id',
+            targetKey: 'id',
+        })
+
+        favorite.belongsTo(models.user, {
+            //user : consulting = 1 : N
+            foreignKey: 'user_id',
+            targetKey: 'id',
+        })
+    };
 
     return favorite;
 };

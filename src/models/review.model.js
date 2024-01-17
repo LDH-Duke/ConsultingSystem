@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
         'review',
         /* Properties */
         {
-            review_id: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
@@ -46,7 +46,19 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     /* Relations */
-    review.associate = models => { };
+    review.associate = models => {
+        review.hasMany(models.review_item, {
+            //user : consulting = 1 : N
+            sourceKey: 'id',
+            foreignKey: 'review_id',
+        })
+
+        review.belongsTo(models.counselor, {
+            //user : consulting = 1 : N
+            target: 'id',
+            foreignKey: 'counselor_id',
+        })
+    };
 
     return review;
 };
