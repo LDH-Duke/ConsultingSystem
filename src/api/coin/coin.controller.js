@@ -33,7 +33,7 @@ export default [
             console.log("[Coin 후원 Controller]");
             console.log(req.body)
             const CoinServiceInstance = Container.get(CoinService);
-            const resultData = await CoinServiceInstance.FindOne(req.query);
+            const resultData = await CoinServiceInstance.Donation(req.query);
             return res.status(200).json({
                 resultMessage: 'success',
                 resultData,
@@ -50,7 +50,7 @@ export default [
         method: 'get',
         middleware: [],
         controller: async (req, res, next) => {
-            console.log("[Coin 결제 내역 단일 조회 Controller]");
+            console.log("[Coin 결제 내역 검색기능 Controller]");
             console.log(req.query)
             const CoinServiceInstance = Container.get(CoinService);
             const resultData = await CoinServiceInstance.FindOne(req.query);

@@ -44,6 +44,12 @@ module.exports = (sequelize, DataTypes) => {
                 notNull: false,
                 comment: ''
             },
+            total_coin: {
+                type: DataTypes.INTEGER,
+                defaultValue:0,
+                notNull: false,
+                comment: ''
+            },
             status: {
                 type: DataTypes.STRING(255),
                 notNull: false,
@@ -77,11 +83,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             updatedAt: {
                 type: DataTypes.DATE,
-                notNull: false,
-                comment: ''
-            },
-            total_coin: {
-                type: DataTypes.STRING(255),
                 notNull: false,
                 comment: ''
             },
