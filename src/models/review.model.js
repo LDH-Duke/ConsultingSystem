@@ -10,12 +10,14 @@ module.exports = (sequelize, Datatypes) => {
                 autoIncrement: true
             },
             total_score: {
-                type: Datatypes.INTEGER,
+                type: Datatypes.FLOAT,
+                defaultValue: 0,
                 notNull: false,
                 comment: ''
             },
             count: {
                 type: Datatypes.INTEGER,
+                defaultValue: 0,
                 notNull: false,
                 comment: ''
             },

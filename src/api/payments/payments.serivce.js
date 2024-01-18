@@ -93,7 +93,7 @@ export default class PaymentService {
         pg_data,
         user_name: userData.name,
         user_id: userData.id,
-      })      
+      })
       
       return resultData;
     } catch (e) {

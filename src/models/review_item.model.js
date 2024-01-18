@@ -14,6 +14,11 @@ module.exports = (sequelize, Datatypes) => {
                 notNull: false,
                 comment: ''
             },
+            content: {
+                type: Datatypes.TEXT,
+                notNull: false,
+                comment: ''
+            },
             created_at: {
                 type: Datatypes.DATE,
                 defaultValue: new Date(),
