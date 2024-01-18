@@ -13,7 +13,7 @@ export default [
     middleware: [],
     controller: async (req, res, next) => {
       try {
-        console.log('[SignUp Controller Enter]');
+        console.log('[Counselor SignUp Controller Enter]');
         const counselorInfo = req.body;
         const CounselorServiceInstance = Container.get(CounselorService);
         const data = await CounselorServiceInstance.SignUp(counselorInfo);
@@ -47,9 +47,7 @@ export default [
 
         //success response data set
         resData.data = data
-        return res.status(200).json(
-          resData
-        )
+        return res.status(200).json(resData)
       } catch (err) {
         return res.status(500).json({
           status: 500,
@@ -72,7 +70,7 @@ export default [
     middleware: [],
     controller: async (req, res, next) => {
       try {
-        console.log('[SignIn Controller Enter]');
+        console.log('[Counselor SignIn Controller Enter]');
         const counselorInfo = req.body;
         const CounselorServiceInstance = Container.get(CounselorService);
         const data = await CounselorServiceInstance.SignIn(counselorInfo);
@@ -108,18 +106,22 @@ export default [
     middleware: [],
     controller: async (req, res, next) => {
       try {
-        console.log("조회")
+        console.log("[Counselor FindOne Controller Enter]")
         const { counselor_id } = req.params
-        console.log(counselor_id);
         const CounselorServiceInstance = Container.get(CounselorService);
-        const resultData = await CounselorServiceInstance.findOne(counselor_id);
+        const data = await CounselorServiceInstance.FindOne(counselor_id);
 
-        console.log(resultData)
-
-        return res.status(200).json({
-          resultMessage: 'success',
-          resultData,
-        });
+        return data ?
+          res.status(200).json({
+            msg: `${data.nickname} 조회완료`,
+            status: 200,
+            data: data
+          }) :
+          res.status(404).json({
+            msg: `조회 실패`,
+            status: 404,
+            data: data
+          })
       } catch (err) {
         return res.status(500).json({
           status: 500,
@@ -139,16 +141,97 @@ export default [
     method: 'get',
     middleware: [],
     controller: async (req, res, next) => {
-      console.log("전체조회")
-      const CounselorServiceInstance = Container.get(CounselorService);
-      const resultData = await CounselorServiceInstance.findAll();
+      try {
+        console.log("[Counselor FindAll Controller Enter]")
+        const CounselorServiceInstance = Container.get(CounselorService);
+        const data = await CounselorServiceInstance.FindAll();
 
-      console.log(resultData)
+        return res.status(200).json({
+          status: 200,
+          msg: '전체 조회 완료',
+          data: data
+        });
+      } catch (error) {
+        return res.status(500).json({
+          status: 500,
+          message: 'Counselor FindAll Error',
+          data: err.message,
+        });
+      }
+    },
+  },
 
-      return res.status(200).json({
-        resultMessage: 'success',
-        resultData,
-      });
+  /**
+   * 정보 수정(PUT)
+   * 
+   */
+  {
+    path: '/counselor/:counselor_id',
+    method: 'put',
+    middleware: [],
+    controller: async (req, res, next) => {
+      try {
+        console.log("[Counselor Update Controller Enter]")
+        const {counselor_id} =req.params
+        const CounselorServiceInstance = Container.get(CounselorService);
+        const data = await CounselorServiceInstance.UpdateCounselor(counselor_id, req.body);
+        
+        return data ?
+          res.status(200).json({
+            status: 200,
+            msg: '정보 수정 완료',
+            data: data
+          }):
+          res.status(409).json({
+            status: 409,
+            msg: '수정 내용 없음',
+            data: data
+          })
+
+      } catch (err) {
+        return res.status(500).json({
+          status: 500,
+          message: 'Counselor Update Error',
+          data: err.message,
+        });
+      }
+    },
+  },
+
+  /**
+   * 상담사 삭제(DELETE)
+   */
+  {
+    path: '/counselor/:counselor_id',
+    method: 'delete',
+    middleware: [],
+    controller: async (req, res, next) => {
+      try {
+        console.log("[Counselor Delete Controller Enter]")
+        const {counselor_id} = req.params
+        const CounselorServiceInstance = Container.get(CounselorService);
+        const data = await CounselorServiceInstance.DeleteCounselor(counselor_id);
+        
+        console.log(data);
+        return data ?
+          res.status(200).json({
+            status: 200,
+            msg: 'Delete Success',
+            data: data
+          }):
+          res.status(404).json({
+            status: 404,
+            msg: 'Not Exist',
+            data: data
+          })
+
+      } catch (err) {
+        return res.status(500).json({
+          status: 500,
+          message: 'Counselor Delete Error',
+          data: err.message,
+        });
+      }
     },
   },
 

@@ -33,10 +33,8 @@ export default class AuthService {
         phone: body.phone,
       }
 
-      console.log(typeof (counselorData.name))
-
       // 1. DB에 전송받은 ID 조회
-      const counselor = await models.counselor.findOne({
+      const is_counselor = await models.counselor.findOne({
         attributes: ['email', 'nickname', 'phone'],
         where: {
           [Op.or]: [
@@ -48,18 +46,18 @@ export default class AuthService {
         raw: true
       })
 
-      console.log(counselor)
+      console.log(is_counselor)
 
       // 2-2. (존재 경우) 거부 코드 리턴
-      if (counselor !== null) {
+      if (is_counselor !== null) {
 
-        if (counselor.email !== null) {
+        if (body.email === is_counselor.email) {
           return 4091
         }
-        if (counselor.nickname !== null) {
+        if (body.nickname === is_counselor.nickname) {
           return 4092
         }
-        if (counselor.phone !== body.phone) {
+        if (body.phone === is_counselor.phone) {
           return 4093
         }
       }
@@ -84,10 +82,10 @@ export default class AuthService {
       return resCounselor.dataValues.nickname
 
 
-    } catch (e) {
-      console.log('[counselor] SignUp ERROR !! : ' + e)
-      logger.error(`[AuthService][SignUp] Error: ${e.message}`);
-      throw e;
+    } catch (err) {
+      console.log('[counselor] SignUp ERROR !! : ' + err)
+      logger.error(`[AuthService][SignUp] Error: ${err.message}`);
+      throw err;
     }
   }
 
@@ -106,8 +104,6 @@ export default class AuthService {
         },
         raw: true
       })
-
-      console.log(is_Counselor === null);
 
       //존재하지 않는 아이디
       if (is_Counselor === null) {
@@ -129,9 +125,9 @@ export default class AuthService {
       return is_Counselor.nickname
 
     } catch (error) {
-      console.log('[counselor] SignUp ERROR !! : ' + e)
+      console.log('[counselor] SignUp ERROR !! : ' + error)
       logger.error(`[AuthService][SignIn] Error: ${error.message}`);
-      throw e;
+      throw error;
     }
   }
 
@@ -139,37 +135,98 @@ export default class AuthService {
    * 단일 조회(GET)
    * --
    */
-  async findOne(params) {
+  async FindOne(params) {
     try {
-      const counselor = await models.counselor.findOne({
-        attributes: { exclude: ['pw', 'salt', 'updatedAt'] },
+      // 본인 조회인지 확인 필요
+
+      // 비밀번호 제외 데이터 조회
+      return await models.counselor.findOne({
+        attributes: { exclude: ['pw', 'salt'] },
         where: {
-          counselor_id: params
-        }
+          id: params
+        },
+        raw:true
       })
-
-      console.log(counselor.dataValues);
-
-      return counselor.dataValues
-
-
-    } catch (error) {
-      logger.error(`[CounselorService][FindOne] Error: ${error.message}`);
+    } catch (err) {
+      console.log('[counselor] FindOne ERROR !! : ' + err)
+      logger.error(`[CounselorService][FindOne] Error: ${err.message}`);
+      throw err;
     }
   }
 
   /**
    * 전체 조회(GET)
-   * --
+   * -- r
    */
-  async findAll() {
+  async FindAll() {
     try {
-      return await models.counselor.findAll({ raw: true })
-
-    } catch (error) {
-      logger.error(`[CounselorService][FindAll] Error: ${error.message}`);
+      return await models.counselor.findAll({
+        attributes: { exclude: ['pw', 'salt'] }
+      },
+        { raw: true })
+    } catch (err) {
+      console.log('[counselor] FindAll ERROR !! : ' + err)
+      logger.error(`[CounselorService][FindAll] Error: ${err.message}`);
+      throw err;
     }
   }
 
+  /**
+   * 정보 수정(PUT)
+   */
+  async UpdateCounselor(counselor_id, body) {
+    try {
+      //수정 내용 중 pw가 있는 경우
+      if(body.pw){
+      // 비밀번호 암호화
+      const salt = await crypto.randomBytes(64).toString('base64')
 
+      const hashedPw = crypto
+        .createHash('sha256')
+        .update(body.pw + salt)
+        .digest('base64')
+
+      body.pw = hashedPw;
+      body.salt = salt;
+      }
+      
+      //update 반환 값은 수정 내용있으면 1 없으면 0
+      const is_update =  await models.counselor.update(body,{
+        where :{id:counselor_id},
+        // individualHooks: true,
+      })
+
+      return is_update[0]
+    } catch (err) {
+      console.log('[counselor] Update ERROR !! : ' + err)
+      logger.error(`[CounselorService][Update Counselor] Error: ${err.message}`);
+      throw err;
+    }
+  }
+
+  /**
+   * 상담사 삭제(DELETE)
+   */
+  async DeleteCounselor(counselor_id){
+    try {
+      return await models.counselor.destroy({where : {id : counselor_id} })
+    } catch (err) {
+      console.log('[counselor] Delete ERROR !! : ' + err)
+      logger.error(`[CounselorService][Delete Counselor] Error: ${err.message}`);
+      throw err;
+    }
+  }
+
+  /**
+   *  닉네임 중복검사
+   */
+  async CheckNickName(nickname){
+    try {
+      return await models.counselor.findOne({where : nickname})
+    } catch (err) {
+      console.log('[counselor] Check Nickname ERROR !! : ' + err)
+      logger.error(`[CounselorService][Check Nickname] Error: ${err.message}`);
+      throw err;
+    }
+  }
 }
