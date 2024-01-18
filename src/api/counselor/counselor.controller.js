@@ -2,23 +2,6 @@ import CounselorService from './counselor.serivce';
 import { Container } from 'typedi';
 
 export default [
-  /** ----------------------------------------
-   *  (GET) 유저 조회
-   *  ----------------------------------------
-   *
-   * @swagger /users:
-   *   get:
-   *     summary: 포스트 조회
-   *     tags: [GET]
-   *     responses:
-   *       200:
-   *         description: 성공
-   *       403:
-   *         $ref: '#/components/res/Forbidden'
-   *       500:
-   *         $ref: '#/components/res/BadRequest'
-   */
-
 
   /**
    * 상담사 회원가입(POST)
@@ -29,43 +12,52 @@ export default [
     method: 'post',
     middleware: [],
     controller: async (req, res, next) => {
-      const counselorInfo = req.body;
-      const CounselorServiceInstance = Container.get(CounselorService);
-      const resultData = await CounselorServiceInstance.SignUp(counselorInfo);
+      try {
+        console.log('[SignUp Controller Enter]');
+        const counselorInfo = req.body;
+        const CounselorServiceInstance = Container.get(CounselorService);
+        const data = await CounselorServiceInstance.SignUp(counselorInfo);
 
+        //res data format
+        const resData = {
+          status: 200,
+          data: '',
+          msg: 'success signup',
+        }
 
-      // if (resultData === 4091) {
-      //   return res.status(409).json({
-      //     msg: '이미 사용중인 이메일 존재',
-      //     status: resultData,
-      //     data: req.body.email
-      //   })
-      // }
-      // if (resultData === 4092) {
-      //   return res.status(409).json({
-      //     msg: '이미 사용중인 닉네임 존재',
-      //     status: resultData,
-      //     data: req.body.nickname
-      //   })
-      // }
-      // if (resultData === 4093) {
-      //   return res.status(409).json({
-      //     msg: '이미 사용중인 휴대폰 번호 존재',
-      //     status: resultData,
-      //     data: req.body.phone
-      //   })
-      // }
+        // failed response process
+        console.log(typeof (data) === "number")
+        if (typeof (data) === "number") {
+          resData.status = 409
+          if (data === 4091) {
+            resData.data = data
+            resData.msg = 'This email is already exist'
 
-      console.log(resultData)
-      if ([4091, 4092, 4093].includes(resultData.status)) {
-        return res.status(resultData.res.status).json(resultData.res)
+          }
+          if (data === 4092) {
+            resData.data = data
+            resData.msg = 'This nickname is already exist'
+          }
+          if (data === 4093) {
+            resData.data = data
+            resData.msg = 'This phone is already exist'
+          }
+          return res.status(409).json(resData)
+        }
+
+        //success response data set
+        resData.data = data
+        return res.status(200).json(
+          resData
+        )
+      } catch (err) {
+        return res.status(500).json({
+          status: 500,
+          message: 'SignIn Error',
+          data: err.message,
+        });
       }
 
-      return res.status(200).json({
-        msg: '회원가입 완료',
-        status: resultData,
-        data: req.body.name
-      })
     },
   },
 
@@ -79,21 +71,31 @@ export default [
     method: 'post',
     middleware: [],
     controller: async (req, res, next) => {
-      const counselorInfo = req.body;
-      const CounselorServiceInstance = Container.get(CounselorService);
-      const resultData = await CounselorServiceInstance.SignIn(counselorInfo);
+      try {
+        console.log('[SignIn Controller Enter]');
+        const counselorInfo = req.body;
+        const CounselorServiceInstance = Container.get(CounselorService);
+        const data = await CounselorServiceInstance.SignIn(counselorInfo);
 
-      return resultData ?
-        res.status(200).json({
-          msg: '로그인 완료',
-          status: 200,
-          data: req.body.email
-        }) :
-        res.status(401).json({
-          msg: '로그인 완료',
-          status: 401,
-          data: req.body.email
-        })
+        // return data value is false or nickname 
+        return data ?
+          res.status(200).json({
+            msg: '로그인 완료',
+            status: 200,
+            data: data
+          }) :
+          res.status(401).json({
+            msg: '로그인 실패',
+            status: 401,
+            data: data
+          })
+      } catch (err) {
+        return res.status(500).json({
+          status: 500,
+          message: 'SignIn Error',
+          data: err.message,
+        });
+      }
     },
   },
 
@@ -105,18 +107,26 @@ export default [
     method: 'get',
     middleware: [],
     controller: async (req, res, next) => {
-      console.log("조회")
-      const { counselor_id } = req.params
-      console.log(counselor_id);
-      const CounselorServiceInstance = Container.get(CounselorService);
-      const resultData = await CounselorServiceInstance.findOne(counselor_id);
+      try {
+        console.log("조회")
+        const { counselor_id } = req.params
+        console.log(counselor_id);
+        const CounselorServiceInstance = Container.get(CounselorService);
+        const resultData = await CounselorServiceInstance.findOne(counselor_id);
 
-      console.log(resultData)
+        console.log(resultData)
 
-      return res.status(200).json({
-        resultMessage: 'success',
-        resultData,
-      });
+        return res.status(200).json({
+          resultMessage: 'success',
+          resultData,
+        });
+      } catch (err) {
+        return res.status(500).json({
+          status: 500,
+          message: 'Counselor FindOne Error',
+          data: err.message,
+        });
+      }
     },
   },
 
@@ -142,45 +152,4 @@ export default [
     },
   },
 
-  /** ----------------------------------------
-   *  (POST) 유저 조회
-   *  ----------------------------------------
-   *
-   * @swagger /users:
-   *   post:
-   *     summary: 포스트 조회
-   *     tags: [POST]
-   *     responses:
-   *       200:
-   *         description: 성공
-   *       403:
-   *         $ref: '#/components/res/Forbidden'
-   *       500:
-   *         $ref: '#/components/res/BadRequest'
-   */
-  {
-    path: '/users',
-    method: 'post',
-    middleware: [],
-    controller: () => 'post user',
-  },
-
-  {
-    path: '/ws',
-    method: 'get',
-    middleware: [],
-    controller: async (req, res, next) => res.render('index', { title: 'aaa' }),
-  },
-  {
-    path: '/ws/namespace',
-    method: 'get',
-    middleware: [],
-    controller: async (_, res, ___) => res.render('socket_namespace'),
-  },
-  {
-    path: '/ws/room',
-    method: 'get',
-    middleware: [],
-    controller: async (_, res, ___) => res.render('socket_room'),
-  },
 ];

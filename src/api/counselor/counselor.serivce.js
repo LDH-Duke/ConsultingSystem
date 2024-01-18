@@ -24,8 +24,19 @@ export default class AuthService {
   async SignUp(body) {
     try {
 
+      const counselorData = {
+        name: body.name,
+        nickname: body.nickname,
+        pw: body.pw,
+        salt,
+        email: body.email,
+        phone: body.phone,
+      }
+
+      console.log(typeof (counselorData.name))
+
       // 1. DB에 전송받은 ID 조회
-      const counselor = await models.counselor.findAll({
+      const counselor = await models.counselor.findOne({
         attributes: ['email', 'nickname', 'phone'],
         where: {
           [Op.or]: [
@@ -33,41 +44,23 @@ export default class AuthService {
             { nickname: body.nickname },
             { phone: body.phone }
           ]
-        }
+        },
+        raw: true
       })
 
-      if (counselor.length != 0) {
+      console.log(counselor)
 
-        // 2-2. (존재 경우) 거부 코드 리턴
-        if (counselor[0].dataValues.email === body.email) {
-          return {
-            status: 4091,
-            res: {
-              msg: '이미 사용중인 이메일 존재',
-              status: 409,
-              data: counselor[0].dataValues.email
-            }
-          }
+      // 2-2. (존재 경우) 거부 코드 리턴
+      if (counselor !== null) {
+
+        if (counselor.email !== null) {
+          return 4091
         }
-        if (counselor[0].dataValues.nickname === body.nickname) {
-          return {
-            status: 4092,
-            res: {
-              msg: '이미 사용중인 닉네임 존재',
-              status: 409,
-              data: counselor[0].dataValues.nickname
-            }
-          }
+        if (counselor.nickname !== null) {
+          return 4092
         }
-        if (counselor[0].dataValues.phone === body.phone) {
-          return {
-            status: 4093,
-            res: {
-              msg: '이미 사용중인 전화번호 존재',
-              status: 409,
-              data: counselor[0].dataValues.phone
-            }
-          }
+        if (counselor.phone !== body.phone) {
+          return 4093
         }
       }
 
@@ -81,55 +74,64 @@ export default class AuthService {
         .update(body.pw + salt)
         .digest('base64')
 
-      body.pw = hashedPw;
-      body.salt = salt;
-      console.log(body)
+      counselorData.pw = hashedPw;
+      counselorData.salt = salt;
 
-      await models.counselor.create(body)
 
-      return 200
+      const resCounselor = await models.counselor.create(counselorData)
+
+      console.log('서비스' + typeof (resCounselor.dataValues.nickname))
+      return resCounselor.dataValues.nickname
+
 
     } catch (e) {
+      console.log('[counselor] SignUp ERROR !! : ' + e)
       logger.error(`[AuthService][SignUp] Error: ${e.message}`);
       throw e;
     }
   }
 
+  /**
+   * 상담사 로그인(POST)
+   * @param {*} body 
+   * @returns 
+   */
+
   async SignIn(body) {
     try {
-
-      console.log(body);
-
       //1. 아이디 조회
-      const id_Check = await models.counselor.findAll({
+      const is_Counselor = await models.counselor.findOne({
         where: {
           email: body.email
-        }
+        },
+        raw: true
       })
 
-      console.log(id_Check.length == 0);
+      console.log(is_Counselor === null);
 
       //존재하지 않는 아이디
-      if (id_Check.length == 0) {
+      if (is_Counselor === null) {
         return false
       }
 
       // 2. (존재 시) salt값과 body.pw를 합쳐서 hash암호화 
       const reqHashedPw = crypto
         .createHash('sha256')
-        .update(body.pw + id_Check[0].dataValues.salt)
+        .update(body.pw + is_Counselor.salt)
         .digest('base64')
 
       //3. 암호화 된 비밀번호와 db 비밀번호 비교
-      if (reqHashedPw !== id_Check[0].dataValues.pw) {
+      if (reqHashedPw !== is_Counselor.pw) {
         return false
       }
 
       // 4. 통과
-      return true
+      return is_Counselor.nickname
 
     } catch (error) {
+      console.log('[counselor] SignUp ERROR !! : ' + e)
       logger.error(`[AuthService][SignIn] Error: ${error.message}`);
+      throw e;
     }
   }
 

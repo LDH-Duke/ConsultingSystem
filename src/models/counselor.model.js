@@ -46,12 +46,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             total_coin: {
                 type: DataTypes.INTEGER,
-                defaultValue:0,
+                defaultValue: 0,
                 notNull: false,
                 comment: ''
             },
             status: {
-                type: DataTypes.STRING(255),
+                type: DataTypes.ENUM('온라인', '상담', '부재', '오프라인', '탈퇴'),
+                defaultValue: '오프라인',
                 notNull: false,
                 comment: ''
             },

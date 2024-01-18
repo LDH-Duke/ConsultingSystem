@@ -22,27 +22,31 @@ export default [
         },
     },
 
-    /**
-     * 코인 후원 (POST)
-     */
-    {
-        path: '/coin/donation',
-        method: 'post',
-        middleware: [],
-        controller: async (req, res, next) => {
-            console.log("[Coin 후원 Controller]");
-            console.log(req.body)
-            const CoinServiceInstance = Container.get(CoinService);
-            const resultData = await CoinServiceInstance.Donation(req.query);
-            return res.status(200).json({
-                resultMessage: 'success',
-                resultData,
-            });
-        },
-    },
+    // /**
+    //  * 코인 후원 (POST)
+    //  */
+    // {
+    //     path: '/coin/donation',
+    //     method: 'post',
+    //     middleware: [],
+    //     controller: async (req, res, next) => {
+    //         console.log("[Coin 후원 Controller]");
+    //         console.log(req.body)
+    //         const CoinServiceInstance = Container.get(CoinService);
+    //         const resultData = await CoinServiceInstance.Donation(req.query);
+    //         return res.status(200).json({
+    //             resultMessage: 'success',
+    //             resultData,
+    //         });
+    //     },
+    // },
 
     /**
-     * 코인 결제 내역 단일 조회(GET)
+     * 코인 결제 내역 단일 조회()
+     */
+
+    /**
+     * 코인 결제 내역 단일 검색(GET)
      * 관리자 검색
      */
     {

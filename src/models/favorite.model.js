@@ -9,11 +9,6 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            count: {
-                type: DataTypes.INTEGER,
-                notNull: false,
-                comment: ''
-            },
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: new Date(),
