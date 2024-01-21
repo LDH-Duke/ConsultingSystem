@@ -23,7 +23,7 @@ export default class AuthService {
         try {
             
             //err msg : 결제 실패 시 잔액부족, 사유 적는 컬럼
-            const data = {
+            const coin_history_data = {
                 category: body.category,
                 amount: body.amount,
                 status: '',//enum
@@ -49,21 +49,23 @@ export default class AuthService {
                 attributes: ['name','total_coin'],
                 where: {
                     id: body.counselor_id
-                }
+                },
+                raw:true
             })
 
             //판매자, 구매자 이름 데이터 추가
             data.user_name = currentUserInfo.name
             data.counselor_name = currentCounselorInfo.name
 
-            //코인 체크
+            //사용자 보유 코인 체크
             const userCoinCheck = currentUserInfo.total_coin - body.amount
 
             if (userCoinCheck < 0) {
                 // failed
                 //상태 추가
                 data.status = 'FAIL'
-                const resultData = await models.coin_history.create(data,{transaction : t})
+                const resultData = await models.coin_history.create(data,
+                    {transaction : t})
                 console.log(resultData)
                 await t.commit()
                 return data
@@ -80,7 +82,7 @@ export default class AuthService {
                 transaction : t
             })
 
-            ////상담사 코인 업데이트
+            ////상담사 보유 코인 업데이트
             const counselorCoinResult = currentCounselorInfo.total_coin + body.amount
             
             await models.counselor.update({
@@ -179,7 +181,7 @@ export default class AuthService {
     // }
 
     /**
-     * 코인 결제 내역 단일 조회(GET)
+     * 코인 결제 내역 단일 검색(GET)
      */
 
     async FindOne(query) {
