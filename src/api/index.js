@@ -5,5 +5,7 @@ import Favorite from './favorite'
 //리뷰
 //스케줄
 //캐쉬
+//문의사항
+import Ask from './ask'
 
-export const routes = [...User, ...Counselor, ...Coin, ...Favorite];
+export const routes = [...User, ...Counselor, ...Coin, ...Favorite, ...Ask];

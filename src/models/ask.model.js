@@ -10,7 +10,27 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true,
             },
             category: {
+                type: DataTypes.ENUM('UserAdmin', 'UserCounselor', 'CounselorAdmin'),
+                notNull: false,
+                comment: ''
+            },
+            writer: {
+                type: DataTypes.ENUM('고객', '상담사', '관리자'),
+                notNull: false,
+                comment: ''
+            },
+            title: {
                 type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            content: {
+                type: DataTypes.STRING(255),
+                notNull: false,
+                comment: ''
+            },
+            group_id: {
+                type: DataTypes.INTEGER,
                 notNull: false,
                 comment: ''
             },
