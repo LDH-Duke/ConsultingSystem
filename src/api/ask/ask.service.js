@@ -26,6 +26,7 @@ export default class AuthService {
         try {
             const askData = {
                 category: '',
+                writer: askInfo.writer,
                 title: askInfo.title,
                 content: askInfo.content,
                 user_id: askInfo.user_id,
