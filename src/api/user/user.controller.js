@@ -105,7 +105,7 @@ export default [
 
         return data ?
           res.status(200).json({
-            msg: `${data.name} 조회완료`,
+            msg: `${data.name} 조회 완료`,
             status: 200,
             data: data
           }) :
@@ -199,17 +199,17 @@ export default [
     controller: async (req, res, next) => {
       try {
         console.log("[User Delete Controller Enter]")
-        const {user_id} = req.params
+        const { user_id } = req.params
         const UserServiceInstance = Container.get(UserService);
         const data = await UserServiceInstance.DeleteCounselor(user_id);
-        
+
         console.log(data);
         return data ?
           res.status(200).json({
             status: 200,
             msg: 'Delete Success',
             data: data
-          }):
+          }) :
           res.status(404).json({
             status: 404,
             msg: 'Not Exist',

@@ -40,7 +40,7 @@ export default class AuthService {
         },
         raw: true
       });
-      console.log(is_user);
+      console.log('회원 여부 : ' + is_user);
 
       // 1. 이메일 또는 휴대폰 존재 시 회원가입 거부
       if (is_user !== null) {
@@ -162,22 +162,22 @@ export default class AuthService {
   async UpdateUser(user_id, body) {
     try {
       //수정 내용 중 pw가 있는 경우
-      if(body.pw){
-      // 비밀번호 암호화
-      const salt = await crypto.randomBytes(64).toString('base64')
+      if (body.pw) {
+        // 비밀번호 암호화
+        const salt = await crypto.randomBytes(64).toString('base64')
 
-      const hashedPw = crypto
-        .createHash('sha256')
-        .update(body.pw + salt)
-        .digest('base64')
+        const hashedPw = crypto
+          .createHash('sha256')
+          .update(body.pw + salt)
+          .digest('base64')
 
-      body.pw = hashedPw;
-      body.salt = salt;
+        body.pw = hashedPw;
+        body.salt = salt;
       }
-      
+
       //update 반환 값은 수정 내용있으면 1 없으면 0
-      const is_update =  await models.user.update(body,{
-        where :{id:user_id},
+      const is_update = await models.user.update(body, {
+        where: { id: user_id },
         // individualHooks: true,
       })
 
@@ -192,9 +192,9 @@ export default class AuthService {
   /**
    * 고객 삭제(DELETE)
    */
-  async DeleteCounselor(user_id){
+  async DeleteCounselor(user_id) {
     try {
-      return await models.user.destroy({where : {id : user_id} })
+      return await models.user.destroy({ where: { id: user_id } })
     } catch (err) {
       console.log('[User] Delete ERROR !! : ' + err)
       logger.error(`[UserService][Delete User] Error: ${err.message}`);
