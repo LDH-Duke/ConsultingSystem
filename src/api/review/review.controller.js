@@ -10,20 +10,31 @@ export default [
    method: 'post',
    middleware: [],
    controller: async (req, res, next) => {
-      /** req.body
-       * user_id, counselor_id, content, score
-      */
-      const reviewInfo = req.body;
-      const ReviewServiceInstance = Container.get(ReviewService);
-
-      try {
-        const resultData = await ReviewServiceInstance.Write(reviewInfo);
+     try {
+       /** req.body
+        * user_id, counselor_id, content, score
+       */
+        console.log('[Review Write Controller]');
+        const reviewInfo = req.body;
+        const ReviewServiceInstance = Container.get(ReviewService);
+        const data = await ReviewServiceInstance.Write(reviewInfo);
         
-        return res.status(200).json({
-          resultData
-        });
+        return data ? res.status(200).json({
+          message: '리뷰 작성 성공',
+          status: 200,
+          data: data
+        }) : 
+          res.status(200).json({
+            message: '리뷰 작성 실패',
+            status: 409,
+            data: data
+          });
       } catch (e) {
-        next(e);
+        return res.status(500).json({
+          status: 500,
+          message: `Review Write Error`,
+          data: e.message
+        });
       }
     },
   },
@@ -35,18 +46,29 @@ export default [
     path: '/review/:counselor_id',
     method: 'get',
     middleware: [],
-    controller: async (req, res, next) => {
-      const {counselor_id} = req.params;
-      const ReviewServiceInstance = Container.get(ReviewService);
-
+    controller: async (req, res, next) => {      
       try {
-        const resultData = ReviewServiceInstance.GetReviews(counselor_id);
+        console.log('[Counselor Review Controller]');
+        const {counselor_id} = req.params;
+        const ReviewServiceInstance = Container.get(ReviewService);
+        const data = ReviewServiceInstance.GetReviews(counselor_id);
 
-        return res.status(resultData.status).json({
-          resultData
-        });
+        return data ? res.status(200).json({
+          message: '리뷰 조회 성공',
+          status: 200,
+          data: data
+        }) : 
+          res.status(200).json({
+            message: '리뷰 조회 실패',
+            status: 409,
+            data: data
+          });
       } catch (e) {
-        next(e);
+        return res.status(500).json({
+          status: 500,
+          message: `Review FindOne Error`,
+          data: e.message
+        });
       }
     }
   },
@@ -58,17 +80,62 @@ export default [
     path: '/review/all',
     method: 'get',
     middleware: [],
-    controller: async (req, res, next) => {
-      const ReviewServiceInstance = Container.get(ReviewService);
-
+    controller: async (req, res, next) => {      
       try {
-        const resultData = ReviewServiceInstance.GetAllReviews();
+        console.log('[All Counselor Review Controller]');
+        const ReviewServiceInstance = Container.get(ReviewService);
+        const data = ReviewServiceInstance.GetAllReviews();
 
-        return res.status(resultData.status).json({
-          resultData
-        });
+        return data ? res.status(200).json({
+          message: '리뷰 전체 조회 성공',
+          status: 200,
+          data: data
+        }) : 
+          res.status(200).json({
+            message: '리뷰 전체 조회 실패',
+            status: 409,
+            data: data
+          });
       } catch (e) {
-        next(e);
+        return res.status(500).json({
+          status: 500,
+          message: `Review FindAll Error`,
+          data: e.message
+        });
+      }
+    }
+  },
+
+  /**
+   * 리뷰 수정 (POST)
+   */
+  {
+    path: '/review/:review_item_id',
+    method: 'put',
+    middleware: [],
+    controller: async (req, res, next) => {
+      try {
+        console.log('[Review Update Controller]');
+        const { review_item_id } = req.params;
+        const ReviewServiceInstance = Container.get(ReviewService);
+        const data = ReviewServiceInstance.UpdateReview(review_item_id, req.body);
+
+        return data ? res.status(200).json({
+          message: '리뷰 갱신 성공',
+          status: 200,
+          data: data
+        }) : 
+          res.status(200).json({
+            message: '리뷰 갱신 실패',
+            status: 409,
+            data: data
+          });
+      } catch (e) {
+        return res.status(500).json({
+          status: 500,
+          message: `Review Update Error`,
+          data: e.message
+        });
       }
     }
   },
@@ -77,21 +144,33 @@ export default [
    * 리뷰 삭제 (POST)
    */
   {
-    path: '/review/delete',
-    method: 'post',
+    path: '/review/:review_item_id',
+    method: 'delete',
     middleware: [],
     controller: async (req, res, next) => {
-      const ReviewServiceInstance = Container.get(ReviewService);
-
       try {
-        const resultData = ReviewServiceInstance.DeleteReview(req.body);
+        console.log('[Review Delete Controller]');
+        const { review_item_id } = req.params;
+        const ReviewServiceInstance = Container.get(ReviewService);
+        const data = ReviewServiceInstance.DeleteReview(review_item_id);
 
-        return res.status(resultData.status).json({
-          resultData
-        });
+        return data ? res.status(200).json({
+          message: '리뷰 삭제 성공',
+          status: 200,
+          data: data
+        }) : 
+          res.status(200).json({
+            message: '리뷰 삭제 실패',
+            status: 409,
+            data: data
+          });
       } catch (e) {
-        next(e);
+        return res.status(500).json({
+          status: 500,
+          message: `Review Delete Error`,
+          data: e.message
+        });
       }
     }
-  }
+  },
 ];
