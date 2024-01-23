@@ -23,7 +23,6 @@ export default class AuthService {
    */
   async Favorite(favoriteInfo) {
     try {
-
       // 회원이 존재하는 지
       const is_user = await models.user.findOne({
         where: {
@@ -42,7 +41,7 @@ export default class AuthService {
 
       if (!is_user || !is_counselor) {
         console.log('존재하지 않는 정보')
-        return 404
+        return 0
       }
 
       // 현재 구독중인지 조회
@@ -97,7 +96,7 @@ export default class AuthService {
 
       if (!is_user || !is_counselor) {
         console.log('존재하지 않는 정보')
-        return 404
+        return 0
       }
 
       // 현재 구독중인지 조회

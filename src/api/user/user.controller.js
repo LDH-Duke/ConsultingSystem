@@ -164,8 +164,9 @@ export default [
       try {
         console.log("[User Update Controller Enter]")
         const { user_id } = req.params
+        const updateBody = req.body
         const UserServiceInstance = Container.get(UserService);
-        const data = await UserServiceInstance.UpdateUser(user_id, req.body);
+        const data = await UserServiceInstance.UpdateUser(user_id, updateBody);
 
         return data ?
           res.status(200).json({
@@ -175,7 +176,7 @@ export default [
           }) :
           res.status(409).json({
             status: 409,
-            msg: '수정 내용 없음',
+            msg: '수정 불가',
             data: data
           })
 

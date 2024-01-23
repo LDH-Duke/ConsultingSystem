@@ -14,14 +14,14 @@ export default class AuthService {
     // @Inject('logger') private logger,
     // @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
 
-    
+
     /**
      * 코인 상품 구매(POST)
      */
     async BuyProduct(body) {
         const t = await models.sequelize.transaction()
         try {
-            
+
             //err msg : 결제 실패 시 잔액부족, 사유 적는 컬럼
             const coin_history_data = {
                 category: body.category,
@@ -46,26 +46,26 @@ export default class AuthService {
 
             //판매자 코인, 이름 조회
             const currentCounselorInfo = await models.counselor.findOne({
-                attributes: ['name','total_coin'],
+                attributes: ['name', 'total_coin'],
                 where: {
                     id: body.counselor_id
                 },
-                raw:true
+                raw: true
             })
 
             //판매자, 구매자 이름 데이터 추가
-            data.user_name = currentUserInfo.name
-            data.counselor_name = currentCounselorInfo.name
+            coin_history_data.user_name = currentUserInfo.name
+            coin_history_data.counselor_name = currentCounselorInfo.name
 
             //사용자 보유 코인 체크
             const userCoinCheck = currentUserInfo.total_coin - body.amount
 
-            if (userCoinCheck < 0) {
+            if (userCoinCheck <= 0) {
                 // failed
                 //상태 추가
-                data.status = 'FAIL'
+                coin_history_data.status = 'FAIL'
                 const resultData = await models.coin_history.create(data,
-                    {transaction : t})
+                    { transaction: t })
                 console.log(resultData)
                 await t.commit()
                 return data
@@ -79,27 +79,27 @@ export default class AuthService {
                 where: {
                     id: body.user_id
                 },
-                transaction : t
+                transaction: t
             })
 
             ////상담사 보유 코인 업데이트
             const counselorCoinResult = currentCounselorInfo.total_coin + body.amount
-            
+
             await models.counselor.update({
-                total_coin:counselorCoinResult
-            },{
-                where:{
-                    id:body.counselor_id
+                total_coin: counselorCoinResult
+            }, {
+                where: {
+                    id: body.counselor_id
                 },
-                transaction : t
+                transaction: t
             })
 
             //// coin_history INSERT
             /////상태 값
             data.status = 'SUCCESS'
-            const resultData = await models.coin_history.create(data,
-                {transaction : t}
-                )
+            const resultData = await models.coin_history.create(coin_history_data,
+                { transaction: t }
+            )
 
 
             await t.commit()

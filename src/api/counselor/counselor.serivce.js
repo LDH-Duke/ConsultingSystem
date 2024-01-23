@@ -46,8 +46,6 @@ export default class AuthService {
         raw: true
       })
 
-      console.log(is_counselor)
-
       // 2-2. (존재 경우) 거부 코드 리턴
       if (is_counselor !== null) {
 
@@ -64,7 +62,6 @@ export default class AuthService {
 
       // 2-1. (없는 경우) 저장 후 승인 코드 리턴
       // 비밀번호 암호화
-      // const hashedPw = await crypto.pbkdf2(body.pw, salt, 256, 64, 'sha512')
       const salt = await crypto.randomBytes(64).toString('base64')
 
       const hashedPw = crypto
@@ -78,9 +75,7 @@ export default class AuthService {
 
       const resCounselor = await models.counselor.create(counselorData)
 
-      console.log('서비스' + typeof (resCounselor.dataValues.nickname))
-      return resCounselor.dataValues.nickname
-
+      return { nickname: resCounselor.dataValues.nickname }
 
     } catch (err) {
       console.log('[counselor] SignUp ERROR !! : ' + err)
@@ -98,7 +93,7 @@ export default class AuthService {
   async SignIn(body) {
     try {
       //1. 아이디 조회
-      const is_Counselor = await models.counselor.findOne({
+      const is_counselor = await models.counselor.findOne({
         where: {
           email: body.email
         },
@@ -106,23 +101,23 @@ export default class AuthService {
       })
 
       //존재하지 않는 아이디
-      if (is_Counselor === null) {
+      if (is_counselor === null) {
         return false
       }
 
       // 2. (존재 시) salt값과 body.pw를 합쳐서 hash암호화 
       const reqHashedPw = crypto
         .createHash('sha256')
-        .update(body.pw + is_Counselor.salt)
+        .update(body.pw + is_counselor.salt)
         .digest('base64')
 
       //3. 암호화 된 비밀번호와 db 비밀번호 비교
-      if (reqHashedPw !== is_Counselor.pw) {
+      if (reqHashedPw !== is_counselor.pw) {
         return false
       }
 
       // 4. 통과
-      return is_Counselor.nickname
+      return { id: is_counselor.id, nickname: is_counselor.nickname }
 
     } catch (error) {
       console.log('[counselor] SignUp ERROR !! : ' + error)
@@ -145,7 +140,7 @@ export default class AuthService {
         where: {
           id: params
         },
-        raw:true
+        raw: true
       })
     } catch (err) {
       console.log('[counselor] FindOne ERROR !! : ' + err)
@@ -177,26 +172,26 @@ export default class AuthService {
   async UpdateCounselor(counselor_id, body) {
     try {
       //수정 내용 중 pw가 있는 경우
-      if(body.pw){
-      // 비밀번호 암호화
-      const salt = await crypto.randomBytes(64).toString('base64')
+      if (body.pw) {
+        // 비밀번호 암호화
+        const salt = await crypto.randomBytes(64).toString('base64')
 
-      const hashedPw = crypto
-        .createHash('sha256')
-        .update(body.pw + salt)
-        .digest('base64')
+        const hashedPw = crypto
+          .createHash('sha256')
+          .update(body.pw + salt)
+          .digest('base64')
 
-      body.pw = hashedPw;
-      body.salt = salt;
+        body.pw = hashedPw;
+        body.salt = salt;
       }
-      
+
       //update 반환 값은 수정 내용있으면 1 없으면 0
-      const is_update =  await models.counselor.update(body,{
-        where :{id:counselor_id},
+      const is_update = await models.counselor.update(body, {
+        where: { id: counselor_id },
         // individualHooks: true,
       })
 
-      return is_update[0]
+      return is_update
     } catch (err) {
       console.log('[counselor] Update ERROR !! : ' + err)
       logger.error(`[CounselorService][Update Counselor] Error: ${err.message}`);
@@ -207,9 +202,9 @@ export default class AuthService {
   /**
    * 상담사 삭제(DELETE)
    */
-  async DeleteCounselor(counselor_id){
+  async DeleteCounselor(counselor_id) {
     try {
-      return await models.counselor.destroy({where : {id : counselor_id} })
+      return await models.counselor.destroy({ where: { id: counselor_id } })
     } catch (err) {
       console.log('[counselor] Delete ERROR !! : ' + err)
       logger.error(`[CounselorService][Delete Counselor] Error: ${err.message}`);
@@ -220,9 +215,9 @@ export default class AuthService {
   /**
    *  닉네임 중복검사
    */
-  async CheckNickName(nickname){
+  async CheckNickName(nickname) {
     try {
-      return await models.counselor.findOne({where : nickname})
+      return await models.counselor.findOne({ where: nickname })
     } catch (err) {
       console.log('[counselor] Check Nickname ERROR !! : ' + err)
       logger.error(`[CounselorService][Check Nickname] Error: ${err.message}`);

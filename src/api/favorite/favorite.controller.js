@@ -18,11 +18,16 @@ export default [
         const FavoriteServiceInstance = Container.get(FavoriteService);
         const data = await FavoriteServiceInstance.Favorite(favoriteInfo);
 
-        return res.status(200).json({
+        return data ? res.status(200).json({
           msg: '좋아요',
           status: data,
           data: ''
-        })
+        }) :
+          res.status(200).json({
+            msg: '오류 및 초기화',
+            status: 404,
+            data: ''
+          })
       } catch (err) {
         return res.status(500).json({
           status: 500,
@@ -48,11 +53,16 @@ export default [
         const FavoriteServiceInstance = Container.get(FavoriteService);
         const data = await FavoriteServiceInstance.FavoriteDelete(favoriteInfo);
 
-        return res.status(200).json({
+        return data ? res.status(200).json({
           msg: '좋아요 해제',
           status: data,
           data: ''
-        })
+        }) :
+          res.status(200).json({
+            msg: '오류 및 초기화',
+            status: 404,
+            data: ''
+          })
       } catch (err) {
         return res.status(500).json({
           status: 500,

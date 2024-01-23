@@ -172,19 +172,19 @@ export default [
     controller: async (req, res, next) => {
       try {
         console.log("[Counselor Update Controller Enter]")
-        const {counselor_id} =req.params
+        const { counselor_id } = req.params
         const CounselorServiceInstance = Container.get(CounselorService);
         const data = await CounselorServiceInstance.UpdateCounselor(counselor_id, req.body);
-        
+
         return data ?
           res.status(200).json({
             status: 200,
             msg: '정보 수정 완료',
             data: data
-          }):
+          }) :
           res.status(409).json({
             status: 409,
-            msg: '수정 내용 없음',
+            msg: '수정 불가',
             data: data
           })
 
@@ -208,17 +208,17 @@ export default [
     controller: async (req, res, next) => {
       try {
         console.log("[Counselor Delete Controller Enter]")
-        const {counselor_id} = req.params
+        const { counselor_id } = req.params
         const CounselorServiceInstance = Container.get(CounselorService);
         const data = await CounselorServiceInstance.DeleteCounselor(counselor_id);
-        
+
         console.log(data);
         return data ?
           res.status(200).json({
             status: 200,
             msg: 'Delete Success',
             data: data
-          }):
+          }) :
           res.status(404).json({
             status: 404,
             msg: 'Not Exist',

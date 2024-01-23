@@ -95,12 +95,10 @@ export default class AuthService {
     async AddAnswer(answerInfo) {
         try {
             const answerData = {
-                category: '',
                 writer: answerInfo.writer,
                 content: answerInfo.content,
                 user_id: answerInfo.user_id,
                 counselor_id: answerInfo.counselor_id,
-                group_id: answerInfo.ask_id
             }
 
             //질문 조회
@@ -113,10 +111,11 @@ export default class AuthService {
                 return 0
             }
 
-            //여기선 사용자 확인 안함 이거 질문사항임
+            //여기선 사용자 확인 안함 이거 질문사항임 => token 인증
 
             // 답변 생성(누가)
             answerData.category = is_ask.category
+            answerData.group_id = answerInfo.ask_id
             return await models.ask.create(answerData)
 
         } catch (err) {
@@ -126,6 +125,86 @@ export default class AuthService {
         }
     }
 
+
+    /**
+     * 문의사항 수정(PUT)
+     */
+    async Update(ask_id, updateBody) {
+        try {
+            //질문 조회
+            const is_ask = await models.ask.findOne({
+                where: { id: ask_id },
+                raw: true
+            })
+            // 작성자 조회 추가해서 권한 있는지 없는지 확인 필요함
+            if (is_ask === null) {
+                console.log('존재하지 않는 문의');
+                return 0
+            }
+
+            const result = await models.ask.update(
+                updateBody,
+                {
+                    where: {
+                        id: ask_id
+                    }
+                })
+
+            // result에 업데이트 내용있으면 1, 없으면 0 일딴 업데이트 한것으로 처리
+            return result
+
+        } catch (err) {
+            console.log('[Ask] Update ERROR !! : ' + err)
+            logger.error(`[AskService][Update] Error: ${err.message}`);
+            throw err;
+        }
+    }
+
+
+    /**
+     * 문의 삭제(DELETE)
+     */
+    async Delete(ask_id, deleteBody) {
+        try {
+            //문의 조회
+            const is_ask = await models.ask.findOne({
+                where: { id: ask_id },
+                raw: true
+            })
+            if (is_ask === null) {
+                console.log('존재하지 않는 게시물')
+                return 0
+            }
+            //권한 확인(상담사인지, 사용자인지 확인)
+            if (deleteBody.writer !== is_ask.writer) {
+                console.log('삭제 권한 없음');
+                return 0
+            }
+
+            //존재 시 삭제
+            return await models.ask.destroy({
+                where: { id: ask_id }
+            })
+        } catch (err) {
+            console.log('[Ask] Delete ERROR !! : ' + err)
+            logger.error(`[AskService][Delete] Error: ${err.message}`);
+            throw err;
+        }
+    }
+
+    /**
+     * 문의 전체 조회 (GET)
+     */
+    async FindAll() {
+        try {
+            return await models.ask.findAll({ raw: true })
+
+        } catch (err) {
+            console.log('[Ask] FindAll ERROR !! : ' + err)
+            logger.error(`[AskService][FindAll] Error: ${err.message}`);
+            throw err;
+        }
+    }
 
 
 

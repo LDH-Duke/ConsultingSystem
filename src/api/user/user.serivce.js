@@ -68,7 +68,7 @@ export default class AuthService {
       // 3. 회원가입 회원 데이터 DB에 저장
       const resUser = await models.user.create(userData);
       console.log(resUser.dataValues.email)
-      return resUser.dataValues.email;
+      return { email: resUser.dataValues.email };
     } catch (err) {
       console.log('[User] SignUp ERROR !! : ' + err)
       logger.error(`[UserService][AuthService][SignUp] Error: ${err.message}`);
@@ -82,32 +82,29 @@ export default class AuthService {
   async SignIn(userInfo) {
     try {
       //아이디 조회
-      const is_User = await models.user.findOne({
+      const is_user = await models.user.findOne({
         where: { email: userInfo.email },
         raw: true
       })
 
       //존재하지 않는 아이디
-      if (is_User === null) {
+      if (is_user === null) {
         return false
       }
 
-      console.log(userInfo)
       //존재하는 아이디
       const reqHashedPw = crypto
         .createHash('sha256')
-        .update(userInfo.pw + is_User.salt)
+        .update(userInfo.pw + is_user.salt)
         .digest('base64')
 
-      console.log(reqHashedPw);
-
       //3. 암호화 된 비밀번호와 db 비밀번호 비교
-      if (reqHashedPw !== is_User.pw) {
+      if (reqHashedPw !== is_user.pw) {
         return false
       }
 
       //리턴
-      return is_User.name
+      return { id: is_user.id, name: is_user.name }
     } catch (err) {
       console.log('[User] SignIn ERROR !! : ' + err)
       logger.error(`[UserService][AuthService][SignIn] Error: ${err.message}`);
@@ -117,7 +114,7 @@ export default class AuthService {
 
 
   /**
-   * 고객 단일 조회(GET)
+   * 고객 단일 조회(GET) 
    *
    */
   async FindOne(user_id) {
@@ -181,7 +178,7 @@ export default class AuthService {
         // individualHooks: true,
       })
 
-      return is_update[0]
+      return is_update
     } catch (err) {
       console.log('[User] Update ERROR !! : ' + err)
       logger.error(`[UserService][Update User] Error: ${err.message}`);
