@@ -107,7 +107,7 @@ export default [
   },
 
   /**
-   * 리뷰 수정 (POST)
+   * 리뷰 수정 (PUT)
    */
   {
     path: '/review/:review_item_id',
@@ -141,7 +141,7 @@ export default [
   },
 
   /**
-   * 리뷰 삭제 (POST)
+   * 리뷰 삭제 (DELETE)
    */
   {
     path: '/review/:review_item_id',

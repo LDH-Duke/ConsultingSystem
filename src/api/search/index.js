@@ -1,2 +1,2 @@
-import ScheduleController from './schedule.controller';
-export default ScheduleController;
+import SearchController from './search.controller';
+export default SearchController;
