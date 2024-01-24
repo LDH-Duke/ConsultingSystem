@@ -1,5 +1,7 @@
 import UserService from './user.serivce';
 import { Container } from 'typedi';
+import JWTManager from '../../utils/JWTManager'
+import dotenv from 'dotenv'
 
 export default [
   /**
@@ -68,17 +70,25 @@ export default [
         const data = await UserServiceInstance.SignIn(userInfo);
 
         // return data value is false or nickname 
-        return data ?
-          res.status(200).json({
-            msg: '로그인 완료',
-            status: 200,
-            data: data
-          }) :
-          res.status(401).json({
+        if (data === false) {
+          return res.status(401).json({
             msg: '로그인 실패',
             status: 401,
             data: data
           })
+        }
+        const jwt = new JWTManager();
+        const token = await jwt.createToken(data, `${process.env.EXPIRESIN}h`)
+        console.log(token);
+        return res.status(200).json({
+          msg: '로그인 완료',
+          status: 200,
+          data: {
+            data,
+            token
+          }
+        })
+
       } catch (err) {
         return res.status(500).json({
           status: 500,
